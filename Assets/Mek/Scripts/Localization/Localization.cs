@@ -69,7 +69,7 @@ namespace Mek.Localization
                     }
                     catch (Exception e)
                     {
-                        // Debug.LogException(e); //somethings wrong
+                        Debug.LogException(e); //somethings wrong
                     }
                 }
             }
