@@ -17,7 +17,7 @@ namespace Game.Scripts.Models
             // Game Specific PLayerData
             { PrefStats.PlayerLevel, new IntStat(0, Int32.MaxValue, 1) },
             { PrefStats.LastActive, new DateStat(DateTime.UtcNow) },
-            { PrefStats.MyTest, new ObjectStat<TestStruct>(JsonUtility.ToJson(new TestStruct(){Number = 100}))}
+            // { PrefStats.MyTest, new ObjectStat<TestStruct>(JsonUtility.ToJson(new TestStruct(){Number = 100}))}
         };
 
         public DateTime LastActive
@@ -32,11 +32,11 @@ namespace Game.Scripts.Models
             set => PrefsManager.SetInt(PrefStats.PlayerLevel, value);
         }
 
-        public TestStruct MyTest
-        {
-            get => PrefsManager.GetObject<TestStruct>(PrefStats.MyTest);
-            set => PrefsManager.SetObject(PrefStats.MyTest, value);
-        }
+        // public TestStruct MyTest
+        // {
+        //     get => PrefsManager.GetObject<TestStruct>(PrefStats.MyTest);
+        //     set => PrefsManager.SetObject(PrefStats.MyTest, value);
+        // }
 
         #region Singleton
 
