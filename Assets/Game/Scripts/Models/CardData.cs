@@ -31,5 +31,7 @@ namespace Game.Scripts.Models
                 _ => Number.ToString()
             };
         }
+
+        public string GetCardInfo() => $"{CardColorType} {CardSeedType} {EvaluateNumber()}";
     }
 }
