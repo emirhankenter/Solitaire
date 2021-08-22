@@ -144,6 +144,7 @@ namespace Game.Scripts.Controllers
             else
             {
                 var cardsToDeal = new List<Card>(_openedDeckPile.GetAllCards());
+                cardsToDeal.Reverse();
                 _openedDeckPile.Remove(cardsToDeal);
                 
                 foreach (var card in cardsToDeal)
