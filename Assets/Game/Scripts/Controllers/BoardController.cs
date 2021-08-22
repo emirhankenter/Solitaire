@@ -115,10 +115,13 @@ namespace Game.Scripts.Controllers
                 return false;
             }
 
-            if (card.CurrentPile is MainPile mainPile)
+            var pile = card.CurrentPile;
+            cards = pile switch
             {
-                cards = mainPile.GetCardStack(card);
-            }
+                MainPile mainPile => mainPile.GetCardStack(card),
+                FoundationPile foundationPile => new List<Card>() {card},
+                _ => cards
+            };
 
             return card.CurrentPile.CanCardBeDraggable(card);
         }
