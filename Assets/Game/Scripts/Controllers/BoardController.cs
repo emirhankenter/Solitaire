@@ -8,6 +8,7 @@ using Game.Scripts.Enums;
 using Game.Scripts.Models;
 using Mek.Extensions;
 using Mek.Utilities;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Game.Scripts.Controllers
@@ -16,7 +17,8 @@ namespace Game.Scripts.Controllers
     {
         [SerializeField] private Card _cardPrefab;
         [SerializeField] private List<Pile> _mainPiles;
-        [SerializeField] private Pile _closedDeckPile;
+        [SerializeField] private OpenedDeckPile _openedDeckPile;
+        [SerializeField] private ClosedDeckPile _closedDeckPile;
         
         public readonly Dictionary<CardSeedType, CardColorType> CardColorDictionary =
             new Dictionary<CardSeedType, CardColorType>()
@@ -120,10 +122,38 @@ namespace Game.Scripts.Controllers
             {
                 MainPile mainPile => mainPile.GetCardStack(card),
                 FoundationPile foundationPile => new List<Card>() {card},
+                OpenedDeckPile openedDeckPile => new List<Card>() {card},
                 _ => cards
             };
 
             return card.CurrentPile.CanCardBeDraggable(card);
+        }
+
+        [Button]
+        public void OnDrawCardClicked()
+        {
+            if (_closedDeckPile.Draw(out List<Card> cards)) // todo: can draw there
+            {
+                _closedDeckPile.Remove(cards);
+                foreach (var card in cards)
+                {
+                    card.Flip();
+                    _openedDeckPile.Add(card);
+                }
+            }
+            else
+            {
+                var cardsToDeal = new List<Card>(_openedDeckPile.GetAllCards());
+                _openedDeckPile.Remove(cardsToDeal);
+                
+                foreach (var card in cardsToDeal)
+                {
+                    card.Flip();
+                }
+                _closedDeckPile.Add(cardsToDeal);
+
+                //todo: get cards in opened then order these in closed
+            }
         }
 
         protected override void OnAwake()

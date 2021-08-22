@@ -57,7 +57,7 @@ namespace Game.Scripts.Behaviours.Piles
         protected abstract void OnCardsAdded(List<Card> cards);
         protected abstract void OnCardsRemoved(List<Card> cards);
 
-        protected abstract void ArrangeOrders();
+        public abstract void ArrangeOrders();
 
         public abstract bool CanCardBeDraggable(Card card);
         public abstract bool CanCardPutHere(Card card);

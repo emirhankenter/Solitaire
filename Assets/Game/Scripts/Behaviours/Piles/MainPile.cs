@@ -18,12 +18,14 @@ namespace Game.Scripts.Behaviours.Piles
         }
         protected override void OnCardsAdded(List<Card> cards)
         {
+            ArrangeOrders();
         }
         protected override void OnCardsRemoved(List<Card> cards)
         {
+            ArrangeOrders();
         }
 
-        protected override void ArrangeOrders()
+        public override void ArrangeOrders()
         {
             for (int i = 0; i < _cards.Count; i++)
             {
@@ -32,6 +34,11 @@ namespace Game.Scripts.Behaviours.Piles
                 if (!DOTween.IsTweening(card.transform))
                 {
                     card.transform.localPosition = Vector3.zero + Vector3.up * (MainPileYOffset * i);
+                }
+
+                if (i == _cards.Count - 1 && !card.IsFacedFront)
+                {
+                    card.Flip();
                 }
             }
         }

@@ -23,7 +23,7 @@ namespace Game.Scripts.Behaviours.Piles
         {
         }
 
-        protected override void ArrangeOrders()
+        public override void ArrangeOrders()
         {
             for (int i = 0; i < _cards.Count; i++)
             {

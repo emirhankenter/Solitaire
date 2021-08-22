@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using DG.Tweening;
+using UnityEngine;
 
 namespace Game.Scripts.Behaviours.Piles
 {
@@ -20,15 +22,36 @@ namespace Game.Scripts.Behaviours.Piles
         {
         }
 
-        protected override void ArrangeOrders()
+        public override void ArrangeOrders()
         {
             for (int i = 0; i < _cards.Count; i++)
             {
-                _cards[i].Order = i * 10;
+                var card = _cards[i];
+                card.Order = i * 10;
+                
+                card.transform.DOLocalMove(Vector3.zero, 0.1f)
+                    .SetEase(Ease.Linear);
             }
         }
 
         public override bool CanCardBeDraggable(Card card) => false;
         public override bool CanCardPutHere(Card card) => false;
+
+        public bool Draw(out List<Card> cards, int count = 1)
+        {
+            cards = null;
+            var cardsCount = _cards.Count;
+            if (cardsCount == 0) return false;
+
+            cards = new List<Card>();
+            for (int i = 0; i < count; i++)
+            {
+                if (cardsCount > i)
+                {
+                    cards.Add(_cards[cardsCount - 1 - i]);
+                }
+            }
+            return true;
+        }
     }
 }

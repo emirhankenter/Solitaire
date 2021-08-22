@@ -1,9 +1,13 @@
+using System;
 using System.Collections.Generic;
+using DG.Tweening;
+using UnityEngine;
 
 namespace Game.Scripts.Behaviours.Piles
 {
     public class OpenedDeckPile : Pile
     {
+        public const float OpenedDeckPileXOffset = 0.3f;
         protected override void OnCardAdded(Card card)
         {
         }
@@ -20,11 +24,24 @@ namespace Game.Scripts.Behaviours.Piles
         {
         }
 
-        protected override void ArrangeOrders()
+        public override void ArrangeOrders()
         {
             for (int i = 0; i < _cards.Count; i++)
             {
-                _cards[i].Order = i * 10;
+                var card = _cards[i];
+                card.Order = i * 10;
+
+                var dif = _cards.Count - i;
+
+                if (_cards.Count <= 2)
+                {
+                    dif = Math.Max(2 - i, 3 - i);
+                }
+
+                // card.transform.localPosition = Vector3.zero + Vector3.right * (dif > 2 ? 0 : ((2 - dif + 1) * OpenedDeckPileXOffset));
+
+                card.transform.DOLocalMove(Vector3.zero + Vector3.right * (dif > 2 ? 0 : ((2 - dif + 1) * OpenedDeckPileXOffset)), 0.1f)
+                    .SetEase(Ease.Linear);
             }
         }
 
@@ -34,5 +51,7 @@ namespace Game.Scripts.Behaviours.Piles
         }
 
         public override bool CanCardPutHere(Card card) => false;
+
+        public List<Card> GetAllCards() => _cards;
     }
 }

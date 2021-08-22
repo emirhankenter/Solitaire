@@ -1398,6 +1398,7 @@ MonoBehaviour:
   - {fileID: 800440605}
   - {fileID: 1819338846}
   - {fileID: 1992318000}
+  _openedDeckPile: {fileID: 13242547}
   _closedDeckPile: {fileID: 1820182584}
 --- !u!1 &800440603
 GameObject:

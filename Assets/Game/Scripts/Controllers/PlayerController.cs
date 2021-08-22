@@ -75,7 +75,7 @@ namespace Game.Scripts.Controllers
                 if (BoardController.Instance.CanCardBeDraggable(card, out var draggableCards))
                 {
                     _heldCards = draggableCards;
-                    card.CurrentPile.Remove(_heldCards);
+                    // card.CurrentPile.Remove(_heldCards);
                 }
             }
         }
@@ -110,13 +110,15 @@ namespace Game.Scripts.Controllers
                 }
                 
                 var pile = cardOnPile.CurrentPile;
-                if (pile.CanCardPutHere(topCard))
+                if (topCard.CurrentPile != pile && pile.CanCardPutHere(topCard))
                 {
+                    lastPile.Remove(_heldCards);
                     pile.Add(_heldCards);
                 }
                 else
                 {
-                    lastPile.Add(_heldCards);
+                    // lastPile.Add(_heldCards);
+                    lastPile.ArrangeOrders();
                 }
             }
             else
@@ -134,18 +136,21 @@ namespace Game.Scripts.Controllers
                         pile = piles.OrderBy(cc => Vector2.Distance(topCard.transform.position, cc.transform.position)).First();
                     }
                 
-                    if (pile.CanCardPutHere(topCard))
+                    if (topCard.CurrentPile != pile && pile.CanCardPutHere(topCard))
                     {
+                        lastPile.Remove(_heldCards);
                         pile.Add(_heldCards);
                     }
                     else
                     {
-                        lastPile.Add(_heldCards);
+                        lastPile.ArrangeOrders();
+                        // lastPile.Add(_heldCards);
                     }
                 }
                 else
                 {
-                    lastPile.Add(_heldCards);
+                    lastPile.ArrangeOrders();
+                    // lastPile.Add(_heldCards);
                 }
             }
             
