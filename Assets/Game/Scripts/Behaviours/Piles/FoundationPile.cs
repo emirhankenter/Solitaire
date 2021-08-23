@@ -49,8 +49,11 @@ namespace Game.Scripts.Behaviours.Piles
 
         public override bool CanCardBeDraggable(Card card) => _cards.Count == 0 || card == _cards.Last();
 
-        public override bool CanCardPutHere(Card card)
+        public override bool CanCardsPutHere(List<Card> cards)
         {
+            if (cards.Count > 1) return false;
+
+            var card = cards.First();
             var cardData = card.CardData;
             
             if (_cards.Count == 0)

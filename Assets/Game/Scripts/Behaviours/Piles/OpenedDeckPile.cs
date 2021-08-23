@@ -62,7 +62,7 @@ namespace Game.Scripts.Behaviours.Piles
             return _cards.IndexOf(card) == _cards.Count - 1;
         }
 
-        public override bool CanCardPutHere(Card card) => false;
+        public override bool CanCardsPutHere(List<Card> cards) => false;
 
         public List<Card> GetAllCards() => _cards;
     }

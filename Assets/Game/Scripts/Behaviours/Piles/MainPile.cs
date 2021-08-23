@@ -99,13 +99,14 @@ namespace Game.Scripts.Behaviours.Piles
             return true;
         }
 
-        public override bool CanCardPutHere(Card card)
+        public override bool CanCardsPutHere(List<Card> cards)
         {
-            if (_cards.Count == 0) return card.CardData.Number == 13;
+            var topCard = cards.First();
+            if (_cards.Count == 0) return topCard.CardData.Number == 13;
             var lastCard = _cards.Last();
             if (!lastCard || !lastCard.IsFacedFront) return true;
 
-            return lastCard.CardData.Number - card.CardData.Number == 1 && lastCard.CardData.CardColorType != card.CardData.CardColorType;
+            return lastCard.CardData.Number - topCard.CardData.Number == 1 && lastCard.CardData.CardColorType != topCard.CardData.CardColorType;
         }
 
         public List<Card> GetCardStack(Card card)

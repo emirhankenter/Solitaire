@@ -76,6 +76,11 @@ namespace Game.Scripts.Controllers
                 if (BoardController.Instance.CanCardBeDraggable(card, out var draggableCards))
                 {
                     _heldCards = draggableCards;
+
+                    for (int i = 0; i < _heldCards.Count; i++)
+                    {
+                        _heldCards[i].Order = 1000 * (i + 1);
+                    }
                     // card.CurrentPile.Remove(_heldCards);
                 }
             }
@@ -111,7 +116,7 @@ namespace Game.Scripts.Controllers
                 }
                 
                 var pile = cardOnPile.CurrentPile;
-                if (topCard.CurrentPile != pile && pile.CanCardPutHere(topCard))
+                if (topCard.CurrentPile != pile && pile.CanCardsPutHere(_heldCards))
                 {
                     lastPile.Remove(_heldCards);
                     pile.Add(_heldCards);
@@ -127,20 +132,22 @@ namespace Game.Scripts.Controllers
             }
             else
             {
-                var overlappingPileColliders = Physics2D.OverlapBoxAll(topCard.transform.position, topCard.Collider.bounds.size, 0, LayerMask.GetMask("Pile", "Card"), -Mathf.Infinity, Mathf.Infinity);
+                var overlappingPileAndCardColliders = Physics2D.OverlapBoxAll(topCard.transform.position, topCard.Collider.bounds.size, 0, LayerMask.GetMask("Pile", "Card"), -Mathf.Infinity, Mathf.Infinity);
 
-                if (overlappingPileColliders.Length > 1)
+                var piles = new List<Pile>();
+                piles = overlappingPileAndCardColliders
+                    .Where(c => c.gameObject.layer == LayerMask.NameToLayer("Pile"))
+                    .Select(c => c.GetComponent<Pile>()).ToList();
+                if (piles.Count > 1)
                 {
-                    var piles = overlappingPileColliders
-                        .Where(c => c.gameObject.layer == LayerMask.NameToLayer("Pile"))
-                        .Select(c => c.GetComponent<Pile>()).ToList();
                     var pile = piles.First();
                     if (piles.Count > 0)
                     {
                         pile = piles.OrderBy(cc => Vector2.Distance(topCard.transform.position, cc.transform.position)).First();
+                        Debug.Log($"Pile: {pile.gameObject.name}");
                     }
                 
-                    if (topCard.CurrentPile != pile && pile.CanCardPutHere(topCard))
+                    if (topCard.CurrentPile != pile && pile.CanCardsPutHere(_heldCards))
                     {
                         lastPile.Remove(_heldCards);
                         pile.Add(_heldCards);

@@ -67,6 +67,6 @@ namespace Game.Scripts.Behaviours.Piles
         public abstract bool ShouldFlip(out List<Card> flippedCards);
 
         public abstract bool CanCardBeDraggable(Card card);
-        public abstract bool CanCardPutHere(Card card);
+        public abstract bool CanCardsPutHere(List<Card> cards);
     }
 }

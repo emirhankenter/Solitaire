@@ -45,7 +45,7 @@ namespace Game.Scripts.Behaviours.Piles
         }
 
         public override bool CanCardBeDraggable(Card card) => false;
-        public override bool CanCardPutHere(Card card) => false;
+        public override bool CanCardsPutHere(List<Card> cards) => false;
 
         public bool Draw(out List<Card> cards, int count = 1)
         {
