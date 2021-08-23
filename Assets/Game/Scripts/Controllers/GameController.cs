@@ -25,7 +25,7 @@ namespace Game.Scripts.Controllers
                 Debug.Log("Ready");
             });
             
-            _boardController.PopulateCards();
+            _boardController.Init();
         }
     }
 }

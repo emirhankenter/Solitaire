@@ -30,7 +30,7 @@ namespace Game.Scripts.Controllers
             };
 
         
-        public void PopulateCards()
+        public void Init()
         {
             var x = 0f;
             var y = 0f;
@@ -105,6 +105,13 @@ namespace Game.Scripts.Controllers
                 card.transform.position = _closedDeckPile.transform.position;
                 card.Init(false);
             }
+            
+            _closedDeckPile.Clicked += OnDrawCardClicked;
+        }
+
+        public void Dispose()//todo: dispose!!!!
+        {
+            _closedDeckPile.Clicked -= OnDrawCardClicked;
         }
 
         public bool CanCardBeDraggable(Card card, out List<Card> cards)

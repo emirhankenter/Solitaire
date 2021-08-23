@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
@@ -6,20 +7,32 @@ namespace Game.Scripts.Behaviours.Piles
 {
     public class ClosedDeckPile : Pile
     {
+        public event Action Clicked;
+
         protected override void OnCardAdded(Card card)
         {
+            card.Collider.enabled = false;
         }
 
         protected override void OnCardRemoved(Card card)
         {
+            card.Collider.enabled = true;
         }
 
         protected override void OnCardsAdded(List<Card> cards)
         {
+            foreach (var card in cards)
+            {
+                card.Collider.enabled = false;
+            }
         }
 
         protected override void OnCardsRemoved(List<Card> cards)
         {
+            foreach (var card in cards)
+            {
+                card.Collider.enabled = true;
+            }
         }
 
         protected override void OnUndo()
@@ -62,6 +75,11 @@ namespace Game.Scripts.Behaviours.Piles
                 }
             }
             return true;
+        }
+
+        public void OnMouseDown()
+        {
+            Clicked?.Invoke();
         }
     }
 }
