@@ -18,12 +18,12 @@ namespace Game.Scripts.View
         private InGamePanelParams _params;
         public override void Open(ViewParams viewParams)
         {
-            base.Open(viewParams);
             _params = viewParams as InGamePanelParams;
             if (_params == null) return;
             
             _pauseButton.gameObject.SetActive(true);
             _pausedContent.gameObject.SetActive(false);
+            base.Open(viewParams);
         }
 
         public override void Close()
@@ -46,6 +46,11 @@ namespace Game.Scripts.View
             _params?.TogglePause?.Invoke(state);
             _pauseButton.gameObject.SetActive(!state);
             _pausedContent.gameObject.SetActive(state);
+        }
+
+        public void OnRestartButtonClicked()
+        {
+            _params?.Restart?.Invoke();
         }
     }
 }

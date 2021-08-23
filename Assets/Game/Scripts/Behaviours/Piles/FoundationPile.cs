@@ -67,5 +67,10 @@ namespace Game.Scripts.Behaviours.Piles
 
             return cardData.Number - lastCardInPile.CardData.Number == 1;
         }
+
+        public bool HasCompletedSuccessfully()
+        {
+            return _cards.Count == 13;
+        }
     }
 }

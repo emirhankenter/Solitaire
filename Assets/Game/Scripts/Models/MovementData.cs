@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Game.Scripts.Behaviours;
 using Game.Scripts.Behaviours.Piles;
@@ -6,6 +7,8 @@ namespace Game.Scripts.Models
 {
     public class MovementData
     {
+        public static event Action MovementMade;
+        
         public List<Card> SourceCards { get; }
         public Pile FromFile { get; }
         public Pile ToPile { get; }
@@ -18,6 +21,7 @@ namespace Game.Scripts.Models
             FromFile = fromPile;
             ToPile = toPile;
             FlippedCards = flippedCards;
+            MovementMade?.Invoke();
         }
 
         public void Undo()

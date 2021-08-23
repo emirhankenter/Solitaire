@@ -56,6 +56,11 @@ namespace Game.Scripts.Behaviours.Piles
             OnUndo();
         }
 
+        public void Clear()
+        {
+            _cards.Clear();
+        }
+
         protected abstract void OnCardAdded(Card card);
         protected abstract void OnCardRemoved(Card card);
 

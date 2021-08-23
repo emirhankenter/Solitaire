@@ -10,6 +10,7 @@ using Mek.Coroutines;
 using Mek.Extensions;
 using Mek.Utilities;
 using Sirenix.OdinInspector;
+using Sirenix.Utilities;
 using UnityEngine;
 
 namespace Game.Scripts.Controllers
@@ -17,9 +18,11 @@ namespace Game.Scripts.Controllers
     public class BoardController : SingletonBehaviour<BoardController>
     {
         public event Action ReadyToPlay;
+        public event Action Completed;
         
         [SerializeField] private Card _cardPrefab;
         [SerializeField] private List<Pile> _mainPiles;
+        [SerializeField] private List<FoundationPile> _foundationPiles;
         [SerializeField] private OpenedDeckPile _openedDeckPile;
         [SerializeField] private ClosedDeckPile _closedDeckPile;
         
@@ -32,41 +35,69 @@ namespace Game.Scripts.Controllers
                 {CardSeedType.Spades, CardColorType.Black},
             };
 
+        private List<Sprite> _numberSprites;
+        private List<Sprite> _seedSprites;
+        
+        private List<Card> _spawnedCards = new List<Card>();
         
         public void Init()
         {
-            var x = 0f;
-            var y = 0f;
-            var numbers = Resources.LoadAll<Sprite>("Numbers").OrderBy(obj => int.Parse(obj.name)).ToList();
-            var seeds = Resources.LoadAll<Sprite>("Seeds").OrderBy(obj => int.Parse(obj.name)).ToList();
+            _numberSprites = Resources.LoadAll<Sprite>("Numbers").OrderBy(obj => int.Parse(obj.name)).ToList();
+            _seedSprites = Resources.LoadAll<Sprite>("Seeds").OrderBy(obj => int.Parse(obj.name)).ToList();
+            
+            _closedDeckPile.Clicked += OnDrawCardClicked;
+            MovementData.MovementMade += OnMovementMade;
+            
+            InitializeCards();
+        }
 
+        public void Dispose()//todo: dispose!!!!
+        {
+            _closedDeckPile.Clicked -= OnDrawCardClicked;
+            MovementData.MovementMade -= OnMovementMade;
+        }
+
+        [Button]
+        public void ResetBoard()
+        {
+            foreach (var card in _spawnedCards)
+            {
+                card.Recycle();
+            }
+            
+            _spawnedCards.Clear();
+            
+            _closedDeckPile.Clear();
+            _openedDeckPile.Clear();
+            _foundationPiles.ForEach(pile => pile.Clear());
+            _mainPiles.ForEach(pile => pile.Clear());
+            
+            InitializeCards();
+        }
+
+        private void InitializeCards()
+        {
             var cards = new List<Card>();
             
             foreach (var pair in CardColorDictionary)
             {
-                var seedSprite = seeds[(int) Enum.Parse(typeof(CardSeedType), pair.Key.ToString())];
+                var seedSprite = _seedSprites[(int) Enum.Parse(typeof(CardSeedType), pair.Key.ToString())];
                 
                 for (int i = 1; i <= 13; i++)
                 {
-                    var cardData = new CardData(pair.Key, pair.Value, seedSprite, numbers[i - 1], i);
-                    var card = Instantiate(_cardPrefab, new Vector3(x,y,0), Quaternion.identity);
+                    var cardData = new CardData(pair.Key, pair.Value, seedSprite, _numberSprites[i - 1], i);
+                    var card = _cardPrefab.Spawn();
+                    card.Collider.enabled = true;
+                    _spawnedCards.Add(card);
                     card.SetData(cardData);
                     cards.Add(card);
-                    // card.Init(true);
-                    x += 1.1f;
                 }
-
-                x = 0f;
-                y -= 1.74f;
             }
 
             var shuffledCards = new List<Card>();
             shuffledCards.AddRange(cards);
             shuffledCards.Shuffle();
             
-            // var mainPileCards = suffledCards.DrawFirstXElement(25)
-
-
             foreach (var card in cards)
             {
                 card.transform.SetParent(_closedDeckPile.transform, true);
@@ -112,13 +143,19 @@ namespace Game.Scripts.Controllers
                 card.transform.position = _closedDeckPile.transform.position;
                 card.Init(false);
             }
-            
-            _closedDeckPile.Clicked += OnDrawCardClicked;
         }
 
-        public void Dispose()//todo: dispose!!!!
+        private void OnMovementMade()
         {
-            _closedDeckPile.Clicked -= OnDrawCardClicked;
+            if (HasCompletedSuccessfully())
+            {
+                Completed?.Invoke();
+            }
+        }
+
+        private bool HasCompletedSuccessfully()
+        {
+            return _foundationPiles.All(pile => pile.HasCompletedSuccessfully());
         }
 
         public bool CanCardBeDraggable(Card card, out List<Card> cards)

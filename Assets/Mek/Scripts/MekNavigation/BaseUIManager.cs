@@ -51,14 +51,7 @@ namespace Mek.Navigation
         {
             if (ActiveView != null)
             {
-                ActiveView.Closed += OnViewClosed;
                 ActiveView.Close();
-            }
-
-            void OnViewClosed()
-            {
-                ActiveView.Closed -= OnViewClosed;
-                ActiveView = null;
             }
 
             return Open(viewParams);
@@ -67,14 +60,7 @@ namespace Mek.Navigation
         {
             if (ActiveView != null)
             {
-                ActiveView.Closed += OnViewClosed;
                 ActiveView.Close();
-            }
-
-            void OnViewClosed()
-            {
-                ActiveView.Closed -= OnViewClosed;
-                ActiveView = null;
             }
 
             return Open(viewType);

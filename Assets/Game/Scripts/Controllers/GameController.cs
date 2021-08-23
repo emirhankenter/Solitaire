@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DG.Tweening;
-using Game.Scripts.Behaviours;
-using Game.Scripts.Enums;
-using Game.Scripts.Models;
+﻿using DG.Tweening;
 using Game.Scripts.Models.ViewParams;
 using Mek.Controllers;
 using Mek.Localization;
@@ -30,11 +24,18 @@ namespace Game.Scripts.Controllers
             {
                 Debug.Log("Mek GM Ready");
             });
-
-            _playerController.CanPlay = false;
+            
             _boardController.ReadyToPlay += OnBoardReadyToPlay;
+            _boardController.Completed += OnBoardCompleted;
             _boardController.Init();
-            Navigation.Panel.Change(new InGamePanelParams(TogglePause));
+            
+            StartGame();
+        }
+
+        private void StartGame()
+        {
+            _playerController.CanPlay = false;
+            Navigation.Panel.Change(new InGamePanelParams(TogglePause, RestartGame));
         }
 
         private void OnBoardReadyToPlay()
@@ -42,11 +43,24 @@ namespace Game.Scripts.Controllers
             _playerController.CanPlay = true;
         }
 
+        private void OnBoardCompleted()
+        {
+            Navigation.Panel.Change(new GameEndPanelParams(RestartGame));
+        }
+
         private void TogglePause(bool state)
         {
             IsPaused = state;
             Time.timeScale = IsPaused ? 0f : 1f;
             _playerController.CanPlay = !state;
+        }
+
+        private void RestartGame()
+        {
+            TogglePause(false);
+            _boardController.ResetBoard();
+            
+            StartGame();
         }
     }
 }
