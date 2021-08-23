@@ -28,8 +28,8 @@ namespace Game.Scripts.Controllers
             _boardController.ReadyToPlay += OnBoardReadyToPlay;
             _boardController.Completed += OnBoardCompleted;
             _boardController.Init();
-            
-            StartGame();
+
+            Navigation.Panel.Change(new HomePanelParams(StartGame, StartGame)); //todo: implement new Match, continue
         }
 
         private void StartGame()

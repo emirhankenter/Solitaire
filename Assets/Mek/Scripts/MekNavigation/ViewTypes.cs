@@ -4,7 +4,10 @@
     {
         public static string InGamePanel = nameof(InGamePanel);
         public static string GameEndPanel = nameof(GameEndPanel);
+        public static string HomePanel = nameof(HomePanel);
+        
         public static string MyPopup = nameof(MyPopup);
+        
         public static string MyLayout = nameof(MyLayout);
     }
 }
