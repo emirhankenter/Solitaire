@@ -25,7 +25,6 @@ namespace Game.Scripts.Controllers
         private void Awake()
         {
             _cam = CameraController.Instance.MainCamera;
-            CanPlay = true; // todo: set this when board is loaded, animation is finished
         }
 
         private void Update()
@@ -63,6 +62,7 @@ namespace Game.Scripts.Controllers
 
         private void OnPressPerformed()
         {
+            if (!CanPlay) return;
             if (_lastMousePos == null || _currentMousePos == null) return;
 
             var worldPoint = _cam.ScreenToWorldPoint(_currentMousePos.Value);
@@ -88,6 +88,7 @@ namespace Game.Scripts.Controllers
 
         private void OnPressCanceled()
         {
+            if (!CanPlay) return;
             if (_lastMousePos == null || _currentMousePos == null) return;
             if (!_heldCards.Any()) return;
 
@@ -171,6 +172,7 @@ namespace Game.Scripts.Controllers
 
         private void OnDragPerformed()
         {
+            if (!CanPlay) return;
             if (_lastMousePos == null || _currentMousePos == null) return;
             if (_heldCards == null) return;
             if (_heldCards.Count == 0) return;

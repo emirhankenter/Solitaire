@@ -6,6 +6,7 @@ using Game.Scripts.Behaviours;
 using Game.Scripts.Behaviours.Piles;
 using Game.Scripts.Enums;
 using Game.Scripts.Models;
+using Mek.Coroutines;
 using Mek.Extensions;
 using Mek.Utilities;
 using Sirenix.OdinInspector;
@@ -15,6 +16,8 @@ namespace Game.Scripts.Controllers
 {
     public class BoardController : SingletonBehaviour<BoardController>
     {
+        public event Action ReadyToPlay;
+        
         [SerializeField] private Card _cardPrefab;
         [SerializeField] private List<Pile> _mainPiles;
         [SerializeField] private OpenedDeckPile _openedDeckPile;
@@ -97,6 +100,10 @@ namespace Game.Scripts.Controllers
                     }
                 }
             }
+            CoroutineController.DoAfterGivenTime(i1, () =>
+            {
+                ReadyToPlay?.Invoke();
+            });
 
             
             foreach (var card in shuffledCards)
@@ -139,6 +146,8 @@ namespace Game.Scripts.Controllers
         [Button]
         public void OnDrawCardClicked()
         {
+            if (GameController.Instance.IsPaused) return;
+            
             if (_closedDeckPile.Draw(out List<Card> cards, 1)) // todo: can draw there
             {
                 _closedDeckPile.Remove(cards);
