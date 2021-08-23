@@ -25,8 +25,15 @@ namespace Game.Scripts.Behaviours.Piles
             ArrangeOrders();
         }
 
+        protected override void OnUndo()
+        {
+            
+        }
+
         public override void ArrangeOrders()
         {
+            if (_cards.Count == 0) return;
+            
             for (int i = 0; i < _cards.Count; i++)
             {
                 var card = _cards[i];
@@ -38,9 +45,28 @@ namespace Game.Scripts.Behaviours.Piles
 
                 if (i == _cards.Count - 1 && !card.IsFacedFront)
                 {
-                    card.Flip();
+                    // card.Flip();
                 }
             }
+        }
+
+        public override bool ShouldFlip(out List<Card> flippedCards)
+        {
+            var hasFlipped = false;
+            flippedCards = null;
+            
+            for (int i = 0; i < _cards.Count; i++)
+            {
+                var card = _cards[i];
+
+                if (i != _cards.Count - 1 || card.IsFacedFront) continue;
+                card.Flip();
+                flippedCards ??= new List<Card>();
+                flippedCards.Add(card);
+                hasFlipped = true;
+            }
+
+            return hasFlipped;
         }
 
         public override bool CanCardBeDraggable(Card card)

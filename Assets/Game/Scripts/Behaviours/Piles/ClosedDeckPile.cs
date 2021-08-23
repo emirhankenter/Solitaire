@@ -22,6 +22,10 @@ namespace Game.Scripts.Behaviours.Piles
         {
         }
 
+        protected override void OnUndo()
+        {
+        }
+
         public override void ArrangeOrders()
         {
             for (int i = 0; i < _cards.Count; i++)
@@ -32,6 +36,12 @@ namespace Game.Scripts.Behaviours.Piles
                 card.transform.DOLocalMove(Vector3.zero, 0.1f)
                     .SetEase(Ease.Linear);
             }
+        }
+
+        public override bool ShouldFlip(out List<Card> flippedCards)
+        {
+            flippedCards = null;
+            return false;
         }
 
         public override bool CanCardBeDraggable(Card card) => false;

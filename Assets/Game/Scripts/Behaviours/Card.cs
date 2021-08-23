@@ -71,7 +71,7 @@ namespace Game.Scripts.Behaviours
         }
 
         [Button]
-        public void Flip()
+        public void Flip(bool withAnimation = true)
         {
             if (IsFlipping) return;
             flip90Degree(() =>
@@ -82,7 +82,7 @@ namespace Game.Scripts.Behaviours
 
             void flip90Degree(Action onComplete = null)
             {
-                transform.DOLocalRotate(new Vector3(0, 90f, 0), 0.1f, RotateMode.LocalAxisAdd)
+                transform.DOLocalRotate(new Vector3(0, 90f, 0), withAnimation ? 0.1f : 0f, RotateMode.LocalAxisAdd)
                     .SetEase(Ease.Linear)
                     .OnComplete(() => onComplete?.Invoke());
             }

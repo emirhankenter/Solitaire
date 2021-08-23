@@ -51,13 +51,20 @@ namespace Game.Scripts.Behaviours.Piles
             // ArrangeOrders();
         }
 
+        public void Undo()
+        {
+            OnUndo();
+        }
+
         protected abstract void OnCardAdded(Card card);
         protected abstract void OnCardRemoved(Card card);
 
         protected abstract void OnCardsAdded(List<Card> cards);
         protected abstract void OnCardsRemoved(List<Card> cards);
+        protected abstract void OnUndo();
 
         public abstract void ArrangeOrders();
+        public abstract bool ShouldFlip(out List<Card> flippedCards);
 
         public abstract bool CanCardBeDraggable(Card card);
         public abstract bool CanCardPutHere(Card card);

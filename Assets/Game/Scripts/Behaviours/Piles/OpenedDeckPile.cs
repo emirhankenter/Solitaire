@@ -22,6 +22,12 @@ namespace Game.Scripts.Behaviours.Piles
 
         protected override void OnCardsRemoved(List<Card> cards)
         {
+            ArrangeOrders();
+        }
+
+        protected override void OnUndo()
+        {
+            ArrangeOrders();
         }
 
         public override void ArrangeOrders()
@@ -43,6 +49,12 @@ namespace Game.Scripts.Behaviours.Piles
                 card.transform.DOLocalMove(Vector3.zero + Vector3.right * (dif > 2 ? 0 : ((2 - dif + 1) * OpenedDeckPileXOffset)), 0.1f)
                     .SetEase(Ease.Linear);
             }
+        }
+
+        public override bool ShouldFlip(out List<Card> flippedCards)
+        {
+            flippedCards = null;
+            return false;
         }
 
         public override bool CanCardBeDraggable(Card card)

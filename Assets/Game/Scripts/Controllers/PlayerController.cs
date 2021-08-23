@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Game.Scripts.Behaviours;
 using Game.Scripts.Behaviours.Piles;
+using Game.Scripts.Models;
 using Sirenix.Utilities;
 using UnityEngine;
 
@@ -114,6 +115,9 @@ namespace Game.Scripts.Controllers
                 {
                     lastPile.Remove(_heldCards);
                     pile.Add(_heldCards);
+                    lastPile.ShouldFlip(out List<Card> flippedCards);
+                        
+                    HistoryController.Instance.SaveMovement(new MovementData(new List<Card>(_heldCards), lastPile, pile, flippedCards));
                 }
                 else
                 {
@@ -140,6 +144,9 @@ namespace Game.Scripts.Controllers
                     {
                         lastPile.Remove(_heldCards);
                         pile.Add(_heldCards);
+                        lastPile.ShouldFlip(out List<Card> flippedCards);
+                        
+                        HistoryController.Instance.SaveMovement(new MovementData(new List<Card>(_heldCards), lastPile, pile, flippedCards));
                     }
                     else
                     {

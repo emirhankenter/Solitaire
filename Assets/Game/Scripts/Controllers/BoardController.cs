@@ -132,14 +132,19 @@ namespace Game.Scripts.Controllers
         [Button]
         public void OnDrawCardClicked()
         {
-            if (_closedDeckPile.Draw(out List<Card> cards)) // todo: can draw there
+            if (_closedDeckPile.Draw(out List<Card> cards, 1)) // todo: can draw there
             {
                 _closedDeckPile.Remove(cards);
+                cards.Reverse();
+                var flippedCards = new List<Card>();
                 foreach (var card in cards)
                 {
                     card.Flip();
                     _openedDeckPile.Add(card);
+                    flippedCards.Add(card);
                 }
+                
+                HistoryController.Instance.SaveMovement(new MovementData(new List<Card>(cards), _closedDeckPile, _openedDeckPile, flippedCards));
             }
             else
             {
@@ -147,13 +152,24 @@ namespace Game.Scripts.Controllers
                 cardsToDeal.Reverse();
                 _openedDeckPile.Remove(cardsToDeal);
                 
+                var flippedCards = new List<Card>();
                 foreach (var card in cardsToDeal)
                 {
                     card.Flip();
+                    flippedCards.Add(card);
                 }
                 _closedDeckPile.Add(cardsToDeal);
+                
+                HistoryController.Instance.SaveMovement(new MovementData(new List<Card>(cardsToDeal), _openedDeckPile, _closedDeckPile, flippedCards));
+            }
+        }
 
-                //todo: get cards in opened then order these in closed
+        [Button]
+        public void Undo()
+        {
+            if (HistoryController.Instance.TryUndo(out MovementData movementData))
+            {
+                movementData.Undo();
             }
         }
 
