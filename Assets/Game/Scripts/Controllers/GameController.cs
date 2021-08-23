@@ -35,7 +35,7 @@ namespace Game.Scripts.Controllers
         private void StartGame()
         {
             _playerController.CanPlay = false;
-            Navigation.Panel.Change(new InGamePanelParams(TogglePause, RestartGame));
+            Navigation.Panel.Change(new InGamePanelParams(TogglePause, UndoMovement, RestartGame));
         }
 
         private void OnBoardReadyToPlay()
@@ -55,9 +55,15 @@ namespace Game.Scripts.Controllers
             _playerController.CanPlay = !state;
         }
 
+        private void UndoMovement()
+        {
+            _boardController.Undo();
+        }
+
         private void RestartGame()
         {
             TogglePause(false);
+            HistoryController.Instance.ClearHistory();
             _boardController.ResetBoard();
             
             StartGame();
