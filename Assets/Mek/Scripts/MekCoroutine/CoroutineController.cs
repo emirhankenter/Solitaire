@@ -35,6 +35,17 @@ namespace Mek.Coroutines
             return IsCoroutineRunning(GenerateKey(coroutine));
         }
 
+        public static void StopCoroutine(IEnumerator coroutine)
+        {
+            var key = GenerateKey(coroutine);
+            if (_coroutineDictionary.TryGetValue(key, out IEnumerator value))
+            {
+                CoroutineWorker.Instance.StopCoroutine(value);
+                _coroutineDictionary.Remove(key);
+                RoutineFinished?.Invoke(key);
+            }
+        }
+
         public static void StopCoroutine(string key)
         {
             if (_coroutineDictionary.TryGetValue(key, out IEnumerator value))

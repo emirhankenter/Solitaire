@@ -1,5 +1,8 @@
 using System;
+using System.Collections;
 using Game.Scripts.Controllers;
+using Mek.Coroutines;
+using Mek.Extensions;
 using UnityEngine;
 
 namespace Game.Scripts.Models
@@ -12,19 +15,27 @@ namespace Game.Scripts.Models
 
         public int Score { get; private set; }
         
-        public Session()
-        {
-            
-        }
+        public TimeSpan TimeSpan { get; private set; }
 
         public void Init()
         {
+            TimeSpan = new TimeSpan();
+
             BoardController.Instance.ScoreMade += OnScoreMade;
         }
 
         public void Dispose()
         {
             BoardController.Instance.ScoreMade -= OnScoreMade;
+            if (CoroutineController.IsCoroutineRunning(TimerRoutine()))
+            {
+                CoroutineController.StopCoroutine(TimerRoutine());
+            }
+        }
+
+        public void StartTimer()
+        {
+            TimerRoutine().StartCoroutine();
         }
 
         private void OnScoreMade(int scoreDelta)
@@ -34,6 +45,15 @@ namespace Game.Scripts.Models
             Score = Mathf.RoundToInt(Mathf.Max(0, Score));
             
             ScoreChanged?.Invoke(Score);
+        }
+
+        private IEnumerator TimerRoutine()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(1f);
+                TimeSpan = TimeSpan.Add(TimeSpan.FromSeconds(1));
+            }
         }
     }
 }

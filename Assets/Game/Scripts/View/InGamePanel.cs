@@ -1,14 +1,10 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using Game.Scripts.Behaviours.Piles;
 using Game.Scripts.Controllers;
 using Game.Scripts.Models;
 using Game.Scripts.Models.ViewParams;
-using Mek.Helpers;
-using Mek.Localization;
-using Mek.Models;
+using Mek.Coroutines;
+using Mek.Extensions;
 using Mek.Navigation;
-using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,6 +16,9 @@ namespace Game.Scripts.View
         [SerializeField] private Button _undoButton;
         [SerializeField] private GameObject _pausedContent;
         [SerializeField] private Text _scoreText;
+        [SerializeField] private Text _timerText;
+
+        private Session _currentSession;
         
         private InGamePanelParams _params;
         public override void Open(ViewParams viewParams)
@@ -35,6 +34,10 @@ namespace Game.Scripts.View
             
             HistoryController.Instance.HistoryChanged += OnHistoryChanged;
             GameController.Instance.CurrentSession.ScoreChanged += OnScoreChanged;
+            BoardController.Instance.ReadyToPlay += OnReadyToPlay;
+
+            _currentSession = GameController.Instance.CurrentSession;
+            SetTimerText();
             
             base.Open(viewParams);
         }
@@ -43,7 +46,18 @@ namespace Game.Scripts.View
         {
             HistoryController.Instance.HistoryChanged -= OnHistoryChanged;
             GameController.Instance.CurrentSession.ScoreChanged -= OnScoreChanged;
+            BoardController.Instance.ReadyToPlay -= OnReadyToPlay;
+
+            if (CoroutineController.IsCoroutineRunning(TimerRoutine()))
+            {
+                CoroutineController.StopCoroutine(TimerRoutine());
+            }
             base.Close();
+        }
+
+        private void OnReadyToPlay()
+        {
+            TimerRoutine().StartCoroutine();
         }
 
         private void OnHistoryChanged()
@@ -88,6 +102,26 @@ namespace Game.Scripts.View
         {
             _params?.Restart?.Invoke();
             OnScoreChanged(0);
+            SetTimerText();
+        }
+
+        private IEnumerator TimerRoutine()
+        {
+            while (true)
+            {
+                SetTimerText();
+                yield return new WaitForSeconds(Time.deltaTime);
+                
+            }
+        }
+
+        private void SetTimerText()
+        {
+            var timeSpan = _currentSession.TimeSpan;
+
+            var format = $@"{(timeSpan.TotalDays >= 1 ? @"dd\:" : "")}{(timeSpan.TotalHours >= 1 ? @"hh\:" : "")}mm\:ss";
+
+            _timerText.text = timeSpan.ToString(format);
         }
     }
 }

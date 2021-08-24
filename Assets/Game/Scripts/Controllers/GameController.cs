@@ -44,10 +44,11 @@ namespace Game.Scripts.Controllers
 
         private void StartGame()
         {
-            _playerController.CanPlay = false;
-            Navigation.Panel.Change(new InGamePanelParams(TogglePause, UndoMovement, RestartGame));
-            
             CurrentSession.Init();
+            
+            _playerController.CanPlay = false;
+            
+            Navigation.Panel.Change(new InGamePanelParams(TogglePause, UndoMovement, RestartGame));
         }
 
         private void Dispose()
@@ -60,6 +61,7 @@ namespace Game.Scripts.Controllers
         private void OnBoardReadyToPlay()
         {
             _playerController.CanPlay = true;
+            CurrentSession.StartTimer();
         }
 
         private void OnBoardCompleted()
