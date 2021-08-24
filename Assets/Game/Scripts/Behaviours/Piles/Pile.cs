@@ -7,7 +7,7 @@ namespace Game.Scripts.Behaviours.Piles
 {
     public abstract class Pile : MonoBehaviour
     {
-        public static event Action<int> ScoreMade;
+        public static Action<int> ScoreMade;
         
         public List<Card> _cards = new List<Card>();
 
@@ -64,11 +64,6 @@ namespace Game.Scripts.Behaviours.Piles
             _cards.Clear();
         }
 
-        public void MakeScore(int score)
-        {
-            ScoreMade?.Invoke(score);
-        }
-
         protected abstract void OnCardAdded(Card card);
         protected abstract void OnCardRemoved(Card card);
 
@@ -82,5 +77,8 @@ namespace Game.Scripts.Behaviours.Piles
         public abstract bool CanCardBeDraggable(Card card);
 
         public abstract bool CanCardsPutHere(List<Card> cards);
+
+        public abstract int GetScoreChangeAfterAddition();
+        public abstract int GetScoreChangeAfterRemoval();
     }
 }

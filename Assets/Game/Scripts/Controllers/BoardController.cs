@@ -163,7 +163,7 @@ namespace Game.Scripts.Controllers
 
         private void OnScoreMade(int score)
         {
-            ScoreMade?.Invoke(score);
+            // ScoreMade?.Invoke(score);
         }
 
         private bool HasCompletedSuccessfully()
@@ -267,7 +267,11 @@ namespace Game.Scripts.Controllers
                 _errorAudioClip.Play();
                 return false;
             }
-                
+
+            int score = CalculateScore(from, to);
+            
+            ScoreMade?.Invoke(score);
+            
             from.Remove(cards);
             to.Add(cards);
             from.ShouldFlip(out List<Card> flippedCards);
@@ -276,9 +280,34 @@ namespace Game.Scripts.Controllers
             {
                 _mainPileAudioClip.Play(0.2f);
             }
-                        
+            
             HistoryController.Instance.SaveMovement(new MovementData(new List<Card>(cards), from, to, flippedCards));
             return true;
+        }
+
+        private int CalculateScore(Pile from, Pile to)
+        {
+            if (from == to) return 0;
+
+            var score = 0;
+
+            if (to is FoundationPile)
+            {
+                var minusScore = from.GetScoreChangeAfterRemoval();
+                var additionScore = to.GetScoreChangeAfterAddition();
+
+                score = additionScore + minusScore;
+            }
+            else
+            {
+                if (to._cards.Count == 0) return 0;
+                
+                var minusScore = from.GetScoreChangeAfterRemoval();
+                var additionScore = to.GetScoreChangeAfterAddition();
+
+                score = additionScore + minusScore;
+            }
+            return score;
         }
 
         [Button]

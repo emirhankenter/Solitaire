@@ -10,7 +10,7 @@ namespace Game.Scripts.Behaviours.Piles
     public class MainPile : Pile
     {
         public const float MainPileYOffset = -0.5f;
-        
+
         protected override void OnCardAdded(Card card)
         {
         }
@@ -20,11 +20,6 @@ namespace Game.Scripts.Behaviours.Piles
         protected override void OnCardsAdded(List<Card> cards)
         {
             ArrangeOrders();
-
-            for (int i = 0; i < cards.Count; i++)
-            {
-                MakeScore(GameConfig.ScoreOnMainPile);
-            }
         }
         protected override void OnCardsRemoved(List<Card> cards)
         {
@@ -114,6 +109,10 @@ namespace Game.Scripts.Behaviours.Piles
 
             return lastCard.CardData.Number - topCard.CardData.Number == 1 && lastCard.CardData.CardColorType != topCard.CardData.CardColorType;
         }
+        
+        public override int GetScoreChangeAfterAddition() => GameConfig.ScoreOnMainPile;
+        
+        public override int GetScoreChangeAfterRemoval() => 0;
 
         public List<Card> GetCardStack(Card card)
         {
