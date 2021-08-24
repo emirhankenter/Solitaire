@@ -25,6 +25,8 @@ namespace Game.Scripts.Behaviours
 
         private int _order;
 
+        private Tween _flipTween;
+        
         [ShowInInspector, MinValue(0)]
         public int Order
         {
@@ -78,7 +80,11 @@ namespace Game.Scripts.Behaviours
         [Button]
         public void Flip(bool withAnimation = true)
         {
-            if (IsFlipping) return;
+            if (IsFlipping)
+            {
+                _flipTween.Kill();
+                transform.localEulerAngles = new Vector3(0, IsFacedFront ? 0 : 180, 0);
+            }
             if (withAnimation)
             {
                 _flipSound.Play(0.2f);
@@ -91,7 +97,7 @@ namespace Game.Scripts.Behaviours
 
             void flip90Degree(Action onComplete = null)
             {
-                transform.DOLocalRotate(new Vector3(0, 90f, 0), withAnimation ? 0.1f : 0f, RotateMode.LocalAxisAdd)
+                _flipTween = transform.DOLocalRotate(new Vector3(0, 90f, 0), withAnimation ? 0.1f : 0f, RotateMode.LocalAxisAdd)
                     .SetEase(Ease.Linear)
                     .OnComplete(() => onComplete?.Invoke());
             }

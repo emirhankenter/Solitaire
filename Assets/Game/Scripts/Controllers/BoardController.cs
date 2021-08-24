@@ -250,6 +250,8 @@ namespace Game.Scripts.Controllers
                 }
                 _closedDeckPile.Add(cardsToDeal);
                 
+                ScoreMade?.Invoke(-GameController.Instance.CurrentSession.Score);
+                
                 HistoryController.Instance.SaveMovement(new MovementData(new List<Card>(cardsToDeal), _openedDeckPile, _closedDeckPile, flippedCards));
             }
         }
@@ -269,7 +271,6 @@ namespace Game.Scripts.Controllers
             }
 
             int score = CalculateScore(from, to);
-            
             ScoreMade?.Invoke(score);
             
             from.Remove(cards);
@@ -281,7 +282,7 @@ namespace Game.Scripts.Controllers
                 _mainPileAudioClip.Play(0.2f);
             }
             
-            HistoryController.Instance.SaveMovement(new MovementData(new List<Card>(cards), from, to, flippedCards));
+            HistoryController.Instance.SaveMovement(new MovementData(new List<Card>(cards), from, to, flippedCards, score));
             return true;
         }
 
@@ -316,6 +317,8 @@ namespace Game.Scripts.Controllers
             if (HistoryController.Instance.TryUndo(out MovementData movementData))
             {
                 movementData.Undo();
+                
+                ScoreMade?.Invoke(-movementData.Score);
             }
         }
 

@@ -14,13 +14,15 @@ namespace Game.Scripts.Models
         public Pile ToPile { get; }
 
         public List<Card> FlippedCards { get; }
+        public int Score { get; }
 
-        public MovementData(List<Card> sourceCards, Pile fromPile, Pile toPile , List<Card> flippedCards = null)
+        public MovementData(List<Card> sourceCards, Pile fromPile, Pile toPile, List<Card> flippedCards = null, int score = 0)
         {
             SourceCards = sourceCards;
             FromFile = fromPile;
             ToPile = toPile;
             FlippedCards = flippedCards;
+            Score = score;
             MovementMade?.Invoke();
         }
 
