@@ -19,13 +19,18 @@ namespace Game.Scripts.Controllers
     {
         public event Action ReadyToPlay;
         public event Action Completed;
+        public event Action<int> ScoreMade;
         
         [SerializeField] private Card _cardPrefab;
         [SerializeField] private List<Pile> _mainPiles;
         [SerializeField] private List<FoundationPile> _foundationPiles;
         [SerializeField] private OpenedDeckPile _openedDeckPile;
         [SerializeField] private ClosedDeckPile _closedDeckPile;
-        
+
+        [SerializeField] private AudioClip _dealCardAudioClip;
+        [SerializeField] private AudioClip _mainPileAudioClip;
+        [SerializeField] private AudioClip _errorAudioClip;
+
         public readonly Dictionary<CardSeedType, CardColorType> CardColorDictionary =
             new Dictionary<CardSeedType, CardColorType>()
             {
@@ -47,6 +52,7 @@ namespace Game.Scripts.Controllers
             
             _closedDeckPile.Clicked += OnDrawCardClicked;
             MovementData.MovementMade += OnMovementMade;
+            Pile.ScoreMade += OnScoreMade;
             
             InitializeCards();
         }
@@ -55,6 +61,7 @@ namespace Game.Scripts.Controllers
         {
             _closedDeckPile.Clicked -= OnDrawCardClicked;
             MovementData.MovementMade -= OnMovementMade;
+            Pile.ScoreMade -= OnScoreMade;
         }
 
         [Button]
@@ -121,13 +128,14 @@ namespace Game.Scripts.Controllers
                         count--;
                         card.transform.DOMove(pile.transform.position + Vector3.up * (MainPile.MainPileYOffset * j), 0.2f)
                             .SetDelay(i1)
-                            .SetEase(Ease.Linear);
+                            .SetEase(Ease.Linear)
+                            .OnStart(() => _dealCardAudioClip.Play(0.2f));
                         
                         card.Init(count == 0);
                         card.SetPile(pile);
                         pile.Add(card);
                         
-                        i1 += 0.04f;
+                        i1 += 0.1f;
                     }
                 }
             }
@@ -151,6 +159,11 @@ namespace Game.Scripts.Controllers
             {
                 Completed?.Invoke();
             }
+        }
+
+        private void OnScoreMade(int score)
+        {
+            ScoreMade?.Invoke(score);
         }
 
         private bool HasCompletedSuccessfully()
@@ -177,7 +190,31 @@ namespace Game.Scripts.Controllers
                 _ => cards
             };
 
+            if (card.CurrentPile.CanCardBeDraggable(card))
+            {
+                return true;
+            }
+
+            foreach (var c in cards)
+            {
+                c.transform.DOShakePosition(0.1f, Vector3.one);
+            }
+
+            return false;
+
             return card.CurrentPile.CanCardBeDraggable(card);
+        }
+
+        public bool CanCardsPutOnPile(List<Card> cards, Pile pile)
+        {
+            var canBePut = pile.CanCardsPutHere(cards);
+
+            if (!canBePut)
+            {
+                _errorAudioClip.Play();
+            }
+
+            return canBePut;
         }
 
         [Button]
@@ -215,6 +252,33 @@ namespace Game.Scripts.Controllers
                 
                 HistoryController.Instance.SaveMovement(new MovementData(new List<Card>(cardsToDeal), _openedDeckPile, _closedDeckPile, flippedCards));
             }
+        }
+
+        public bool TryToPutCards(List<Card> cards, Pile from, Pile to)
+        {
+            if (from == to)
+            {
+                from.ArrangeOrders();
+                return false;
+            }
+            if (!to.CanCardsPutHere(cards))
+            {
+                from.ArrangeOrders();
+                _errorAudioClip.Play();
+                return false;
+            }
+                
+            from.Remove(cards);
+            to.Add(cards);
+            from.ShouldFlip(out List<Card> flippedCards);
+
+            if (to is MainPile mainPile)
+            {
+                _mainPileAudioClip.Play(0.2f);
+            }
+                        
+            HistoryController.Instance.SaveMovement(new MovementData(new List<Card>(cards), from, to, flippedCards));
+            return true;
         }
 
         [Button]

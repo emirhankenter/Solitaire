@@ -4,6 +4,7 @@
     {
         public static readonly string LastActive = "LastActive";
         public static readonly string PlayerLevel = "PlayerLevel";
+        public static readonly string Score = "Score";
         public static readonly string MyTest = "MyTest";
     }
 }

@@ -3,6 +3,7 @@ using DG.Tweening;
 using Game.Scripts.Behaviours.Piles;
 using Game.Scripts.Enums;
 using Game.Scripts.Models;
+using Mek.Extensions;
 using Mek.Interfaces;
 using Mek.Utilities;
 using Sirenix.OdinInspector;
@@ -17,6 +18,8 @@ namespace Game.Scripts.Behaviours
         [SerializeField] private SpriteRenderer _backRenderer;
         [SerializeField] private SpriteRenderer _seedRenderer;
         [SerializeField] private SpriteRenderer _numberRenderer;
+        
+        [SerializeField] private AudioClip _flipSound;
 
         public BoxCollider2D Collider => _collider;
 
@@ -76,6 +79,10 @@ namespace Game.Scripts.Behaviours
         public void Flip(bool withAnimation = true)
         {
             if (IsFlipping) return;
+            if (withAnimation)
+            {
+                _flipSound.Play(0.2f);
+            }
             flip90Degree(() =>
             {
                 SwitchFace();

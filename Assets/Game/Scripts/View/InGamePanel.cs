@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Game.Scripts.Behaviours.Piles;
 using Game.Scripts.Controllers;
 using Game.Scripts.Models;
 using Game.Scripts.Models.ViewParams;
 using Mek.Helpers;
 using Mek.Localization;
+using Mek.Models;
 using Mek.Navigation;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -17,6 +19,7 @@ namespace Game.Scripts.View
         [SerializeField] private Button _pauseButton;
         [SerializeField] private Button _undoButton;
         [SerializeField] private GameObject _pausedContent;
+        [SerializeField] private Text _scoreText;
         
         private InGamePanelParams _params;
         public override void Open(ViewParams viewParams)
@@ -28,8 +31,10 @@ namespace Game.Scripts.View
             _pausedContent.gameObject.SetActive(false);
             
             UpdateUndoButton();
-
+            OnScoreChanged(0);
+            
             HistoryController.Instance.HistoryChanged += OnHistoryChanged;
+            GameController.Instance.CurrentSession.ScoreChanged += OnScoreChanged;
             
             base.Open(viewParams);
         }
@@ -37,12 +42,18 @@ namespace Game.Scripts.View
         public override void Close()
         {
             HistoryController.Instance.HistoryChanged -= OnHistoryChanged;
+            GameController.Instance.CurrentSession.ScoreChanged -= OnScoreChanged;
             base.Close();
         }
 
         private void OnHistoryChanged()
         {
             UpdateUndoButton();
+        }
+
+        private void OnScoreChanged(int score)
+        {
+            _scoreText.text = score.ToString();
         }
 
         private void UpdateUndoButton()
@@ -64,6 +75,7 @@ namespace Game.Scripts.View
         {
             _params?.TogglePause?.Invoke(state);
             _pauseButton.gameObject.SetActive(!state);
+            _undoButton.gameObject.SetActive(!state);
             _pausedContent.gameObject.SetActive(state);
         }
 
@@ -75,6 +87,7 @@ namespace Game.Scripts.View
         public void OnRestartButtonClicked()
         {
             _params?.Restart?.Invoke();
+            OnScoreChanged(0);
         }
     }
 }

@@ -381,6 +381,7 @@ MonoBehaviour:
   _backRenderer: {fileID: 4936714969303690552}
   _seedRenderer: {fileID: 4936714968386632060}
   _numberRenderer: {fileID: 4936714967876486585}
+  _flipSound: {fileID: 8300000, guid: e9abc834883e6f14396a670fb11d87b1, type: 3}
 --- !u!61 &5240813533615959784
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -4,6 +4,7 @@ using System.Linq;
 using Game.Scripts.Behaviours;
 using Game.Scripts.Behaviours.Piles;
 using Game.Scripts.Models;
+using Mek.Extensions;
 using Sirenix.Utilities;
 using UnityEngine;
 
@@ -92,7 +93,7 @@ namespace Game.Scripts.Controllers
             if (_lastMousePos == null || _currentMousePos == null) return;
             if (!_heldCards.Any()) return;
 
-            var topCard = _heldCards.First();
+            var topCard = Enumerable.First(_heldCards);
             var lastPile = topCard.CurrentPile;
 
             var overlappingCardColliders = Physics2D.OverlapBoxAll(topCard.transform.position, topCard.Collider.bounds.size, 0, LayerMask.GetMask("Card"), -Mathf.Infinity, Mathf.Infinity);
@@ -117,53 +118,33 @@ namespace Game.Scripts.Controllers
                 }
                 
                 var pile = cardOnPile.CurrentPile;
-                if (topCard.CurrentPile != pile && pile.CanCardsPutHere(_heldCards))
-                {
-                    lastPile.Remove(_heldCards);
-                    pile.Add(_heldCards);
-                    lastPile.ShouldFlip(out List<Card> flippedCards);
-                        
-                    HistoryController.Instance.SaveMovement(new MovementData(new List<Card>(_heldCards), lastPile, pile, flippedCards));
-                }
-                else
-                {
-                    // lastPile.Add(_heldCards);
-                    lastPile.ArrangeOrders();
-                }
+                
+                BoardController.Instance.TryToPutCards(_heldCards, lastPile, pile);
             }
             else
             {
                 var overlappingPileColliders = Physics2D.OverlapBoxAll(topCard.transform.position, topCard.Collider.bounds.size, 0, LayerMask.GetMask("Pile", "Card"), -Mathf.Infinity, Mathf.Infinity);
+                var piles = new List<Pile>();
 
-                if (overlappingPileColliders.Length > 1)
+                if (overlappingPileColliders.Length > 0)
                 {
-                    var piles = overlappingPileColliders
+                    piles = overlappingPileColliders
                         .Where(c => c.gameObject.layer == LayerMask.NameToLayer("Pile"))
                         .Select(c => c.GetComponent<Pile>()).ToList();
-                    var pile = piles.First();
-                    if (piles.Count > 0)
+                }
+                if (piles.Count > 0)
+                {
+                    var pile = Enumerable.First(piles);
+                    if (piles.Count > 1)
                     {
                         pile = piles.OrderBy(cc => Vector2.Distance(topCard.transform.position, cc.transform.position)).First();
                     }
-                
-                    if (topCard.CurrentPile != pile && pile.CanCardsPutHere(_heldCards))
-                    {
-                        lastPile.Remove(_heldCards);
-                        pile.Add(_heldCards);
-                        lastPile.ShouldFlip(out List<Card> flippedCards);
-                        
-                        HistoryController.Instance.SaveMovement(new MovementData(new List<Card>(_heldCards), lastPile, pile, flippedCards));
-                    }
-                    else
-                    {
-                        lastPile.ArrangeOrders();
-                        // lastPile.Add(_heldCards);
-                    }
+
+                    BoardController.Instance.TryToPutCards(_heldCards, lastPile, pile);
                 }
                 else
                 {
                     lastPile.ArrangeOrders();
-                    // lastPile.Add(_heldCards);
                 }
             }
             

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
+using Game.Scripts.Models;
 using Mek.Extensions;
 using UnityEngine;
 
@@ -19,6 +20,11 @@ namespace Game.Scripts.Behaviours.Piles
         protected override void OnCardsAdded(List<Card> cards)
         {
             ArrangeOrders();
+
+            for (int i = 0; i < cards.Count; i++)
+            {
+                MakeScore(GameConfig.ScoreOnMainPile);
+            }
         }
         protected override void OnCardsRemoved(List<Card> cards)
         {

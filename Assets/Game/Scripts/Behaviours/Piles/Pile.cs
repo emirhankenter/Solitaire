@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Sirenix.Utilities;
 using UnityEngine;
@@ -6,6 +7,8 @@ namespace Game.Scripts.Behaviours.Piles
 {
     public abstract class Pile : MonoBehaviour
     {
+        public static event Action<int> ScoreMade;
+        
         public List<Card> _cards = new List<Card>();
 
         public void Add(Card card)
@@ -61,6 +64,11 @@ namespace Game.Scripts.Behaviours.Piles
             _cards.Clear();
         }
 
+        public void MakeScore(int score)
+        {
+            ScoreMade?.Invoke(score);
+        }
+
         protected abstract void OnCardAdded(Card card);
         protected abstract void OnCardRemoved(Card card);
 
@@ -72,6 +80,7 @@ namespace Game.Scripts.Behaviours.Piles
         public abstract bool ShouldFlip(out List<Card> flippedCards);
 
         public abstract bool CanCardBeDraggable(Card card);
+
         public abstract bool CanCardsPutHere(List<Card> cards);
     }
 }

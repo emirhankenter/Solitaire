@@ -1,4 +1,7 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
+using Game.Scripts.Behaviours.Piles;
+using Game.Scripts.Models;
 using Game.Scripts.Models.ViewParams;
 using Mek.Controllers;
 using Mek.Localization;
@@ -11,9 +14,12 @@ namespace Game.Scripts.Controllers
 {
     public class GameController : SingletonBehaviour<GameController>
     {
-        public bool IsPaused { get; private set; }
         [SerializeField] private BoardController _boardController;
         [SerializeField] private PlayerController _playerController;
+        public bool IsPaused { get; private set; }
+        
+        public Session CurrentSession { get; private set; }
+        
         protected override void OnAwake()
         {
             DOTween.SetTweensCapacity(400, 50);
@@ -28,14 +34,27 @@ namespace Game.Scripts.Controllers
             _boardController.ReadyToPlay += OnBoardReadyToPlay;
             _boardController.Completed += OnBoardCompleted;
             _boardController.Init();
+            
+            CurrentSession?.Dispose();
+            CurrentSession = Session.New;
 
-            Navigation.Panel.Change(new HomePanelParams(StartGame, StartGame)); //todo: implement new Match, continue
+            // Navigation.Panel.Change(new HomePanelParams(StartGame, StartGame)); //todo: implement new Match, continue
+            StartGame();
         }
 
         private void StartGame()
         {
             _playerController.CanPlay = false;
             Navigation.Panel.Change(new InGamePanelParams(TogglePause, UndoMovement, RestartGame));
+            
+            CurrentSession.Init();
+        }
+
+        private void Dispose()
+        {
+            CurrentSession?.Dispose();
+            _boardController.ReadyToPlay -= OnBoardReadyToPlay;
+            _boardController.Completed -= OnBoardCompleted;
         }
 
         private void OnBoardReadyToPlay()
@@ -64,6 +83,7 @@ namespace Game.Scripts.Controllers
         {
             TogglePause(false);
             HistoryController.Instance.ClearHistory();
+            CurrentSession?.Dispose();
             _boardController.ResetBoard();
             
             StartGame();

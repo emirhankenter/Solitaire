@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using DG.Tweening;
+using Game.Scripts.Controllers;
+using Game.Scripts.Models;
 using Mek.Extensions;
 using UnityEngine;
 
@@ -7,20 +9,27 @@ namespace Game.Scripts.Behaviours.Piles
 {
     public class FoundationPile : Pile
     {
+        [SerializeField] private AudioClip _foundationPileAudioClip;
         protected override void OnCardAdded(Card card)
         {
+            _foundationPileAudioClip.Play();
+            MakeScore(GameConfig.ScoreOnFoundationPile);
         }
 
         protected override void OnCardRemoved(Card card)
         {
+            MakeScore(-GameConfig.ScoreOnFoundationPile);
         }
 
         protected override void OnCardsAdded(List<Card> cards)
         {
+            _foundationPileAudioClip.Play();
+            MakeScore(GameConfig.ScoreOnFoundationPile);
         }
 
         protected override void OnCardsRemoved(List<Card> cards)
         {
+            MakeScore(Mathf.RoundToInt(-GameConfig.ScoreOnFoundationPile * 1.5f));
         }
 
         protected override void OnUndo()
