@@ -44,17 +44,18 @@ namespace Game.Scripts.Controllers
         private List<Sprite> _seedSprites;
         
         private List<Card> _spawnedCards = new List<Card>();
-        
-        public void Init()
+
+        protected override void OnAwake()
         {
             _numberSprites = Resources.LoadAll<Sprite>("Numbers").OrderBy(obj => int.Parse(obj.name)).ToList();
             _seedSprites = Resources.LoadAll<Sprite>("Seeds").OrderBy(obj => int.Parse(obj.name)).ToList();
-            
+        }
+
+        public void Init()
+        {
             _closedDeckPile.Clicked += OnDrawCardClicked;
             MovementData.MovementMade += OnMovementMade;
             Pile.ScoreMade += OnScoreMade;
-            
-            InitializeCards();
         }
 
         public void Dispose()//todo: dispose!!!!
@@ -78,11 +79,9 @@ namespace Game.Scripts.Controllers
             _openedDeckPile.Clear();
             _foundationPiles.ForEach(pile => pile.Clear());
             _mainPiles.ForEach(pile => pile.Clear());
-            
-            InitializeCards();
         }
 
-        private void InitializeCards()
+        public void DealCards()
         {
             var cards = new List<Card>();
             
@@ -222,7 +221,7 @@ namespace Game.Scripts.Controllers
         {
             if (GameController.Instance.IsPaused) return;
             
-            if (_closedDeckPile.Draw(out List<Card> cards, 1)) // todo: can draw there
+            if (_closedDeckPile.Draw(out List<Card> cards, PlayerData.Instance.Draw3Enabled ? 3 : 1)) // todo: can draw there
             {
                 _closedDeckPile.Remove(cards);
                 cards.Reverse();
@@ -320,11 +319,6 @@ namespace Game.Scripts.Controllers
                 
                 ScoreMade?.Invoke(-movementData.Score);
             }
-        }
-
-        protected override void OnAwake()
-        {
-            
         }
     }
 }

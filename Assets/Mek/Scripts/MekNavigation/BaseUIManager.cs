@@ -86,23 +86,10 @@ namespace Mek.Navigation
             ActiveView = null;
         }
 
-        #region Singleton
-
-        private static BaseUiManager _baseUiManager;
-
-        public static BaseUiManager Instance
+        public void ToggleBlocker(bool state)
         {
-            get
-            {
-                if (_baseUiManager == null)
-                {
-                    _baseUiManager = FindObjectOfType<BaseUiManager>();
-                }
-                return _baseUiManager;
-            }
+            if (transform.childCount == 0) return;
+            transform.GetChild(0).gameObject.SetActive(state);
         }
-
-        #endregion
-
     }
 }

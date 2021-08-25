@@ -8,6 +8,7 @@ namespace Mek.Navigation
 {
     public class Popup : ContentBase
     {
+        [SerializeField] private bool _animate;
         [SerializeField] private AudioClip _openingSound;
         [SerializeField] private AudioClip _closingSound;
 
@@ -15,16 +16,23 @@ namespace Mek.Navigation
         
         public override void Open(ViewParams viewParams)
         {
-            transform.localScale = Vector3.zero;
             if (_openingSound)
             {
                 AudioController.Play(_openingSound);
             }
 
-            IsAnimating = true;
-            transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack)
-                .OnComplete(() => IsAnimating = false);
-            base.Open(viewParams);
+            if (!_animate)
+            {
+                base.Open(viewParams);
+            }
+            else
+            {
+                transform.localScale = Vector3.zero;
+                IsAnimating = true;
+                transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack)
+                    .OnComplete(() => IsAnimating = false);
+                base.Open(viewParams);
+            }
         }
 
         public override void Close()
@@ -34,14 +42,20 @@ namespace Mek.Navigation
                 AudioController.Play(_closingSound);
             }
 
-            IsAnimating = true;
-            transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBack).OnComplete(() =>
+            if (!_animate)
             {
-                transform.localScale = Vector3.one;
-                gameObject.SetActive(false);
                 base.Close();
-                IsAnimating = false;
-            });
+            }
+            else
+            {
+                IsAnimating = true;
+                transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBack).OnComplete(() =>
+                {
+                    transform.localScale = Vector3.one;
+                    base.Close();
+                    IsAnimating = false;
+                });
+            }
         }
     }
 }

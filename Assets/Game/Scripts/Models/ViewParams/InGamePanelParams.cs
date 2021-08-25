@@ -8,12 +8,14 @@ namespace Game.Scripts.Models.ViewParams
         public Action<bool> TogglePause;
         public Action Undo;
         public Action Restart;
+        public Action BackToHomeScreenClicked;
         
-        public InGamePanelParams(Action<bool> togglePause, Action undo, Action restart) : base(ViewTypes.InGamePanel)
+        public InGamePanelParams(Action<bool> togglePause, Action undo, Action restart, Action backToHomeScreenClicked) : base(ViewTypes.InGamePanel)
         {
             TogglePause = togglePause;
             Undo = undo;
             Restart = restart;
+            BackToHomeScreenClicked = backToHomeScreenClicked;
         }
     }
 }

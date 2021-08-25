@@ -32,28 +32,28 @@ namespace Game.Scripts.Controllers
                 Debug.Log("Mek GM Ready");
             });
             
+            _boardController.ReadyToPlay += OnBoardReadyToPlay;
+            _boardController.Completed += OnBoardCompleted;
             
             CoroutineController.DoAfterFixedUpdate(() =>
             {
-                _boardController.ReadyToPlay += OnBoardReadyToPlay;
-                _boardController.Completed += OnBoardCompleted;
-                _boardController.Init();
-            
-                CurrentSession?.Dispose();
-                CurrentSession = Session.New;
-
-                // Navigation.Panel.Change(new HomePanelParams(StartGame, StartGame)); //todo: implement new Match, continue
-                StartGame();
+                Navigation.Panel.Change(new HomePanelParams(StartGame, StartGame)); //todo: implement new Match, continue
+                // StartGame();
             });
         }
 
         private void StartGame()
         {
-            CurrentSession.Init();
+            CurrentSession?.Dispose();
+            _boardController.Init();
+            
+            CurrentSession = Session.New;
+            CurrentSession?.Init();
+            _boardController.DealCards();
             
             _playerController.CanPlay = false;
             
-            Navigation.Panel.Change(new InGamePanelParams(TogglePause, UndoMovement, RestartGame));
+            Navigation.Panel.Change(new InGamePanelParams(TogglePause, UndoMovement, RestartGame, BackToHomeScreen));
         }
 
         private void Dispose()
@@ -71,7 +71,11 @@ namespace Game.Scripts.Controllers
 
         private void OnBoardCompleted()
         {
-            Navigation.Panel.Change(new GameEndPanelParams(RestartGame));
+            Navigation.Panel.Change(new GameEndPanelParams(() =>
+            {
+                ResetGame();
+                StartGame();
+            }));
         }
 
         private void TogglePause(bool state)
@@ -88,12 +92,28 @@ namespace Game.Scripts.Controllers
 
         private void RestartGame()
         {
+            ResetGame();
+            StartGame();
+        }
+
+        private void ResetGame()
+        {
             TogglePause(false);
             HistoryController.Instance.ClearHistory();
             CurrentSession?.Dispose();
             _boardController.ResetBoard();
+        }
+
+        private void BackToHomeScreen()
+        {
+            ResetGame();
             
-            StartGame();
+            _boardController.Dispose();
+            // _boardController.Init();
+            // _boardController.DealCards();
+            
+            // CurrentSession = Session.New;
+            Navigation.Panel.Change(new HomePanelParams(StartGame, StartGame)); //todo: implement new Match, continue
         }
     }
 }

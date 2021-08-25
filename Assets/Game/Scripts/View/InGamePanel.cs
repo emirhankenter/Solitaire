@@ -106,6 +106,12 @@ namespace Game.Scripts.View
             SetTimerText();
         }
 
+        public void OnBackToHomeScreenButtonClicked()
+        {
+            Close();
+            _params?.BackToHomeScreenClicked?.Invoke();
+        }
+
         private IEnumerator TimerRoutine()
         {
             while (true)

@@ -64,7 +64,10 @@ namespace Game.Scripts.View
 
         public void OnNewMatchButtonClicked()
         {
-            _params?.NewMatchButtonClicked?.Invoke();
+            Navigation.Popup.Open(new GameSelectionPopupParams(() =>
+            {
+                _params?.NewMatchButtonClicked?.Invoke();
+            }));
         }
 
         public void OnContinueButtonClicked() // todo: interactivity of button when there is no match
