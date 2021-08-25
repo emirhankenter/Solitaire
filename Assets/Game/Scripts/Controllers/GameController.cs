@@ -4,6 +4,7 @@ using Game.Scripts.Behaviours.Piles;
 using Game.Scripts.Models;
 using Game.Scripts.Models.ViewParams;
 using Mek.Controllers;
+using Mek.Coroutines;
 using Mek.Localization;
 using Mek.Models;
 using Mek.Navigation;
@@ -31,15 +32,19 @@ namespace Game.Scripts.Controllers
                 Debug.Log("Mek GM Ready");
             });
             
-            _boardController.ReadyToPlay += OnBoardReadyToPlay;
-            _boardController.Completed += OnBoardCompleted;
-            _boardController.Init();
             
-            CurrentSession?.Dispose();
-            CurrentSession = Session.New;
+            CoroutineController.DoAfterFixedUpdate(() =>
+            {
+                _boardController.ReadyToPlay += OnBoardReadyToPlay;
+                _boardController.Completed += OnBoardCompleted;
+                _boardController.Init();
+            
+                CurrentSession?.Dispose();
+                CurrentSession = Session.New;
 
-            // Navigation.Panel.Change(new HomePanelParams(StartGame, StartGame)); //todo: implement new Match, continue
-            StartGame();
+                // Navigation.Panel.Change(new HomePanelParams(StartGame, StartGame)); //todo: implement new Match, continue
+                StartGame();
+            });
         }
 
         private void StartGame()

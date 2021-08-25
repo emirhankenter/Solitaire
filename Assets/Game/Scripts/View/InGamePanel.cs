@@ -31,6 +31,7 @@ namespace Game.Scripts.View
             
             UpdateUndoButton();
             OnScoreChanged(0);
+            TogglePause(false);
             
             HistoryController.Instance.HistoryChanged += OnHistoryChanged;
             GameController.Instance.CurrentSession.ScoreChanged += OnScoreChanged;
