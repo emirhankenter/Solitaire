@@ -1,4 +1,5 @@
 using System;
+using Game.Scripts.Controllers;
 using Game.Scripts.Models.ViewParams;
 using Mek.Navigation;
 using Sirenix.OdinInspector;
@@ -15,10 +16,6 @@ namespace Game.Scripts.View
         [SerializeField] private RectTransform _newMatchButton;
         [SerializeField] private RectTransform _continueButton;
 
-#if UNITY_EDITOR
-        [NonSerialized, ShowInInspector, OnValueChanged(nameof(OnRectTransformDimensionsChange))] private ScreenOrientation _screenOrientation = ScreenOrientation.Unknown;
-#endif
-
         private HomePanelParams _params;
         
         public override void Open(ViewParams viewParams)
@@ -26,46 +23,50 @@ namespace Game.Scripts.View
             _params = viewParams as HomePanelParams;
             if(_params == null) return;
             
-            OnRectTransformDimensionsChange();
+            // OnRectTransformDimensionsChange();
+
+            DeviceController.DeviceOrientationChanged += OnDeviceOrientationChanged;
             
             base.Open(viewParams);
         }
 
         public override void Close()
         {
+            DeviceController.DeviceOrientationChanged -= OnDeviceOrientationChanged;
             base.Close();
         }
 
-        private void OnRectTransformDimensionsChange()
+        private void OnDeviceOrientationChanged(DeviceOrientation orientation)
         {
-            var orientation = Screen.orientation;
 
-            if (orientation != ScreenOrientation.Portrait || orientation != ScreenOrientation.LandscapeLeft)
-                orientation = ScreenOrientation.Portrait;
-
-#if UNITY_EDITOR
-            orientation = _screenOrientation;
-#endif
+            if (orientation != DeviceOrientation.Portrait || orientation != DeviceOrientation.LandscapeLeft)
+                orientation = DeviceOrientation.Portrait;
             
-            _seedsPortraitVariation.gameObject.SetActive(orientation == ScreenOrientation.Portrait);
-            _seedsLandscapeVariation.gameObject.SetActive(orientation == ScreenOrientation.LandscapeLeft);
+            _seedsPortraitVariation.gameObject.SetActive(orientation == DeviceOrientation.Portrait);
+            _seedsLandscapeVariation.gameObject.SetActive(orientation == DeviceOrientation.LandscapeLeft);
 
-            _title.anchoredPosition = orientation == ScreenOrientation.Portrait ? new Vector2(0, -60.79f) : new Vector2(0, -10f);
-            _cards.anchoredPosition = orientation == ScreenOrientation.Portrait ? new Vector2(0, -120.58f) : new Vector2(0, -37.5f);
-            _newMatchButton.anchoredPosition = orientation == ScreenOrientation.Portrait ? new Vector2(0, -70.1f) : new Vector2(0, -20.9f);
-            _continueButton.anchoredPosition = orientation == ScreenOrientation.Portrait ? new Vector2(0, -126.3f) : new Vector2(0, -46.9f);
+            // _title.anchoredPosition = orientation == ScreenOrientation.Portrait ? new Vector2(0, -60.79f) : new Vector2(0, -60.79f);
+            _cards.anchoredPosition = orientation == DeviceOrientation.Portrait ? new Vector2(0, -419.5f) : new Vector2(0, -521.86f);
+            // _newMatchButton.anchoredPosition = orientation == ScreenOrientation.Portrait ? new Vector2(0, -267f) : new Vector2(0, -267f);
+            _continueButton.anchoredPosition = orientation == DeviceOrientation.Portrait ? new Vector2(0, -433.3f) : new Vector2(0, -519.7f);
 
-            var scale = orientation == ScreenOrientation.Portrait ? Vector3.one : Vector3.one * 0.6f;
+            var scale = orientation == DeviceOrientation.Portrait ? Vector3.one : Vector3.one * 2f;
             _title.localScale = scale;
             _cards.localScale = scale;
             _newMatchButton.localScale = scale;
             _continueButton.localScale = scale;
         }
 
+        private void OnRectTransformDimensionsChange()
+        {
+        }
+
         public void OnNewMatchButtonClicked()
         {
+            Navigation.Popup.ToggleBlocker(true);
             Navigation.Popup.Open(new GameSelectionPopupParams(() =>
             {
+                Navigation.Popup.ToggleBlocker(false);
                 _params?.NewMatchButtonClicked?.Invoke();
             }));
         }
