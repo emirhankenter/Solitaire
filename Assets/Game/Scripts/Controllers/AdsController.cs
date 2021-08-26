@@ -6,10 +6,6 @@ namespace Game.Scripts.Controllers
 {
     public class AdsController : SingletonBehaviour<AdsController>, IUnityAdsInitializationListener
     {
-        protected override void OnAwake()
-        {
-        }
-        
         [SerializeField] string _androidGameId;
         [SerializeField] string _iOsGameId;
         [SerializeField] bool _testMode = true;
@@ -24,6 +20,9 @@ namespace Game.Scripts.Controllers
 
         public bool IsInitialized { get; private set; }
         
+        protected override void OnAwake()
+        {
+        }
         public void InitializeAds()
         {
             _gameId = (Application.platform == RuntimePlatform.IPhonePlayer)
@@ -46,10 +45,14 @@ namespace Game.Scripts.Controllers
 
         #region Banner
         
-        string _bannerAdUnitId;
+        private string _bannerAdUnitId;
+        private bool _bannerShowRequested;
 
         public void LoadBanner()
         {
+            if (!IsInitialized) return;
+            if (!Advertisement.IsReady()) return;
+            
             BannerLoadOptions options = new BannerLoadOptions
             {
                 loadCallback = OnBannerLoaded,
@@ -61,6 +64,15 @@ namespace Game.Scripts.Controllers
 
         public void ShowBannerAd()
         {
+            if (!IsInitialized) return;
+            if (!Advertisement.IsReady()) return;
+            
+            if (!Advertisement.Banner.isLoaded)
+            {
+                _bannerShowRequested = true;
+                LoadBanner();
+                return;
+            }
             BannerOptions options = new BannerOptions
             {
                 clickCallback = OnBannerClicked,
@@ -73,12 +85,20 @@ namespace Game.Scripts.Controllers
 
         public void HideBannerAd()
         {
+            if (!IsInitialized) return;
+            if (!Advertisement.IsReady()) return;
+            
             Advertisement.Banner.Hide();
         }
 
         void OnBannerLoaded()
         {
             Debug.Log("Banner loaded");
+            if (_bannerShowRequested)
+            {
+                ShowBannerAd();
+                _bannerShowRequested = false;
+            }
         }
 
         void OnBannerError(string message)
