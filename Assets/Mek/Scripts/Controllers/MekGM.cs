@@ -1,4 +1,5 @@
 ﻿using System;
+using Game.Scripts.Controllers;
 using Mek.Remote;
 using Mek.Utilities;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace Mek.Controllers
         public bool IsInitialized { get; private set; }
         protected override void OnAwake()
         {
+            AdsController.Instance.InitializeAds();
             RemoteConfig.Initialize();
             RemoteConfig.DoAfterInitialized(() =>
             {
