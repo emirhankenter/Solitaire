@@ -40,6 +40,11 @@ namespace Game.Scripts.Controllers
             {
                 Navigation.Panel.Change(new HomePanelParams(StartGame, StartGame)); //todo: implement new Match, continue
             });
+            
+            CoroutineController.DoAfterCondition(() => AdsController.Instance.IsInitialized, () =>
+            {
+                AdsController.Instance.LoadBanner();
+            });
         }
 
         private void StartGame()
@@ -53,6 +58,8 @@ namespace Game.Scripts.Controllers
             _playerController.CanPlay = false;
             
             Navigation.Panel.Change(new InGamePanelParams(TogglePause, UndoMovement, RestartGame, BackToHomeScreen));
+            
+            AdsController.Instance.ShowBannerAd();
         }
 
         private void Dispose()
@@ -107,6 +114,8 @@ namespace Game.Scripts.Controllers
         {
             ResetGame();
             Navigation.Panel.Change(new HomePanelParams(StartGame, StartGame)); //todo: implement new Match, continue
+            
+            AdsController.Instance.HideBannerAd();
         }
     }
 }
