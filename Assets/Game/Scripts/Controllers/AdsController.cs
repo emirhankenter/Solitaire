@@ -11,8 +11,8 @@ namespace Game.Scripts.Controllers
         [SerializeField] bool _testMode = true;
         [SerializeField] bool _enablePerPlacementMode = true;
         
-        private const string _androidAdUnitId = "Banner_Android";
-        private const string _iOsAdUnitId = "Banner_iOS";
+        private const string _androidBannerAdUnitId = "Banner_Android";
+        private const string _iOsBannerAdUnitId = "Banner_iOS";
         
         private BannerPosition _bannerPosition = BannerPosition.BOTTOM_CENTER;
 
@@ -25,6 +25,7 @@ namespace Game.Scripts.Controllers
         }
         public void InitializeAds()
         {
+            _bannerAdUnitId = Application.platform == RuntimePlatform.IPhonePlayer ? _iOsBannerAdUnitId : _androidBannerAdUnitId;
             _gameId = (Application.platform == RuntimePlatform.IPhonePlayer)
                 ? _iOsGameId
                 : _androidGameId;
@@ -44,14 +45,13 @@ namespace Game.Scripts.Controllers
         }
 
         #region Banner
-        
+
         private string _bannerAdUnitId;
-        private bool _bannerShowRequested;
 
         public void LoadBanner()
         {
             if (!IsInitialized) return;
-            if (!Advertisement.IsReady()) return;
+            if (!Advertisement.isInitialized) return;
             
             BannerLoadOptions options = new BannerLoadOptions
             {
@@ -65,14 +65,8 @@ namespace Game.Scripts.Controllers
         public void ShowBannerAd()
         {
             if (!IsInitialized) return;
-            if (!Advertisement.IsReady()) return;
-            
-            if (!Advertisement.Banner.isLoaded)
-            {
-                _bannerShowRequested = true;
-                LoadBanner();
-                return;
-            }
+            if (!Advertisement.isInitialized) return;
+
             BannerOptions options = new BannerOptions
             {
                 clickCallback = OnBannerClicked,
@@ -86,7 +80,7 @@ namespace Game.Scripts.Controllers
         public void HideBannerAd()
         {
             if (!IsInitialized) return;
-            if (!Advertisement.IsReady()) return;
+            if (!Advertisement.isInitialized) return;
             
             Advertisement.Banner.Hide();
         }
@@ -94,11 +88,6 @@ namespace Game.Scripts.Controllers
         void OnBannerLoaded()
         {
             Debug.Log("Banner loaded");
-            if (_bannerShowRequested)
-            {
-                ShowBannerAd();
-                _bannerShowRequested = false;
-            }
         }
 
         void OnBannerError(string message)
