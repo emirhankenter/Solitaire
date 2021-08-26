@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Mek.Extensions;
 using Mek.Utilities;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Game.Scripts.Controllers
@@ -43,5 +44,13 @@ namespace Game.Scripts.Controllers
                 yield return new WaitForSeconds(_checkInterval);
             }
         }
+        
+#if UNITY_EDITOR
+        [Button]
+        private void TestOrientation(DeviceOrientation orientation)
+        {
+            DeviceOrientationChanged?.Invoke(orientation);
+        }
+#endif
     }
 }

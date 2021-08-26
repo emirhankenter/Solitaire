@@ -13,5 +13,11 @@
             get => PrefsManager.GetBool(PrefStats.MusicOpened);
             set => PrefsManager.SetBool(PrefStats.MusicOpened, value);
         }
+
+        public static bool SoundFXEnabled
+        {
+            get => PrefsManager.GetBool(PrefStats.SoundFXEnabled);
+            set => PrefsManager.SetBool(PrefStats.SoundFXEnabled, value);
+        }
     }
 }

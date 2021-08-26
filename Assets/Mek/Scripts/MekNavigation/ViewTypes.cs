@@ -7,6 +7,7 @@
         public static string HomePanel = nameof(HomePanel);
         
         public static string GameSelectionPopup = nameof(GameSelectionPopup);
+        public static string SettingsPopup = nameof(SettingsPopup);
         
         public static string MyLayout = nameof(MyLayout);
     }

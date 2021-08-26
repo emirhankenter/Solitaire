@@ -1,6 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using DG.Tweening;
-using Game.Scripts.Behaviours.Piles;
 using Game.Scripts.Models;
 using Game.Scripts.Models.ViewParams;
 using Mek.Controllers;
@@ -15,6 +14,8 @@ namespace Game.Scripts.Controllers
 {
     public class GameController : SingletonBehaviour<GameController>
     {
+        public List<SystemLanguage> Languages = new List<SystemLanguage>() {SystemLanguage.Turkish, SystemLanguage.English, SystemLanguage.Italian};
+        
         [SerializeField] private BoardController _boardController;
         [SerializeField] private PlayerController _playerController;
         public bool IsPaused { get; private set; }

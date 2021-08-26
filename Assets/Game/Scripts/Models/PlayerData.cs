@@ -19,6 +19,7 @@ namespace Game.Scripts.Models
             { PrefStats.LastActive, new DateStat(DateTime.UtcNow) },
             { PrefStats.Score, new IntStat(0, Int32.MaxValue, 0) },
             { PrefStats.Draw3Enabled, new BoolStat() },
+            { PrefStats.Language, new IntStat(0, Int32.MaxValue, (int)SystemLanguage.English) },
             // { PrefStats.MyTest, new ObjectStat<TestStruct>(JsonUtility.ToJson(new TestStruct(){Number = 100}))}
         };
 
@@ -44,6 +45,12 @@ namespace Game.Scripts.Models
         {
             get => PrefsManager.GetBool(PrefStats.Draw3Enabled);
             set => PrefsManager.SetBool(PrefStats.Draw3Enabled, value);
+        }
+
+        public int Language
+        {
+            get => PrefsManager.GetInt(PrefStats.Language);
+            set => PrefsManager.SetInt(PrefStats.Language, value);
         }
 
         // public TestStruct MyTest

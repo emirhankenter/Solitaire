@@ -4,5 +4,6 @@
     {
         public static readonly string IsStatSet = "IsStatSet";
         public static readonly string MusicOpened = "MusicOpened";
+        public static readonly string SoundFXEnabled = "SoundFXEnabled";
     }
 }

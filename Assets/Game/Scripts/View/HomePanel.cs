@@ -15,6 +15,7 @@ namespace Game.Scripts.View
         [SerializeField] private RectTransform _seedsLandscapeVariation;
         [SerializeField] private RectTransform _newMatchButton;
         [SerializeField] private RectTransform _continueButton;
+        [SerializeField] private RectTransform _settingsButton;
 
         private HomePanelParams _params;
         
@@ -38,19 +39,21 @@ namespace Game.Scripts.View
 
         private void OnDeviceOrientationChanged(DeviceOrientation orientation)
         {
-
+#if UNITY_EDITOR
             if (orientation != DeviceOrientation.Portrait || orientation != DeviceOrientation.LandscapeLeft)
-                orientation = DeviceOrientation.Portrait;
+                // orientation = DeviceOrientation.Portrait;
+#endif
             
             _seedsPortraitVariation.gameObject.SetActive(orientation == DeviceOrientation.Portrait);
             _seedsLandscapeVariation.gameObject.SetActive(orientation == DeviceOrientation.LandscapeLeft);
 
             // _title.anchoredPosition = orientation == ScreenOrientation.Portrait ? new Vector2(0, -60.79f) : new Vector2(0, -60.79f);
-            _cards.anchoredPosition = orientation == DeviceOrientation.Portrait ? new Vector2(0, -419.5f) : new Vector2(0, -521.86f);
+            _cards.anchoredPosition = orientation == DeviceOrientation.Portrait ? new Vector2(0, -419.5f) : new Vector2(0, -439.9f);
             // _newMatchButton.anchoredPosition = orientation == ScreenOrientation.Portrait ? new Vector2(0, -267f) : new Vector2(0, -267f);
-            _continueButton.anchoredPosition = orientation == DeviceOrientation.Portrait ? new Vector2(0, -433.3f) : new Vector2(0, -519.7f);
+            _continueButton.anchoredPosition = orientation == DeviceOrientation.Portrait ? new Vector2(0, -433.3f) : new Vector2(0, -462.3f);
+            // _settingsButton.anchoredPosition = orientation == DeviceOrientation.Portrait ? new Vector2(120, 120f) : new Vector2(120, 120f);
 
-            var scale = orientation == DeviceOrientation.Portrait ? Vector3.one : Vector3.one * 2f;
+            var scale = orientation == DeviceOrientation.Portrait ? Vector3.one : Vector3.one * 1.4f;
             _title.localScale = scale;
             _cards.localScale = scale;
             _newMatchButton.localScale = scale;
@@ -75,5 +78,19 @@ namespace Game.Scripts.View
         {
             _params?.ContinueButtonClicked?.Invoke();
         }
+
+        public void OnSettingsButtonClicked()
+        {
+            Navigation.Popup.ToggleBlocker(true);
+            Navigation.Popup.Register(ViewTypes.SettingsPopup);
+        }
+
+#if UNITY_EDITOR
+        [Button]
+        private void TestOrientation(DeviceOrientation orientation)
+        {
+            OnDeviceOrientationChanged(orientation);
+        }
+#endif
     }
 }
