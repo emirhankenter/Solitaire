@@ -34,18 +34,17 @@ namespace Game.Scripts.Controllers
             
             _boardController.ReadyToPlay += OnBoardReadyToPlay;
             _boardController.Completed += OnBoardCompleted;
+            _boardController.Init();
             
             CoroutineController.DoAfterFixedUpdate(() =>
             {
                 Navigation.Panel.Change(new HomePanelParams(StartGame, StartGame)); //todo: implement new Match, continue
-                // StartGame();
             });
         }
 
         private void StartGame()
         {
             CurrentSession?.Dispose();
-            _boardController.Init();
             
             CurrentSession = Session.New;
             CurrentSession?.Init();
@@ -107,12 +106,6 @@ namespace Game.Scripts.Controllers
         private void BackToHomeScreen()
         {
             ResetGame();
-            
-            _boardController.Dispose();
-            // _boardController.Init();
-            // _boardController.DealCards();
-            
-            // CurrentSession = Session.New;
             Navigation.Panel.Change(new HomePanelParams(StartGame, StartGame)); //todo: implement new Match, continue
         }
     }
