@@ -25,7 +25,7 @@ namespace Game.Scripts.Controllers
         protected override void OnAwake()
         {
             DOTween.SetTweensCapacity(400, 50);
-            LocalizationManager.Init();
+            LocalizationManager.Init((SystemLanguage)PlayerData.Instance.Language);
             PrefsManager.Initialize();
             
             MekGM.Instance.DoAfterInitialized(() =>

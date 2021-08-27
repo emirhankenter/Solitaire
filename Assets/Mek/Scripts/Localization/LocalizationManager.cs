@@ -58,6 +58,7 @@ namespace Mek.Localization
             {
                 if (langDict.TryGetValue(Language, out translation))
                 {
+                    translation = translation.ToLower();
                     return true;
                 }
                 else

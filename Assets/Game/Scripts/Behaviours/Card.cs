@@ -5,6 +5,7 @@ using Game.Scripts.Enums;
 using Game.Scripts.Models;
 using Mek.Extensions;
 using Mek.Interfaces;
+using Mek.Models;
 using Mek.Utilities;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -87,7 +88,10 @@ namespace Game.Scripts.Behaviours
             }
             if (withAnimation)
             {
-                _flipSound.Play(0.2f);
+                if (MekPlayerData.SoundFXEnabled)
+                {
+                    _flipSound.Play(0.2f);
+                }
             }
             flip90Degree(() =>
             {

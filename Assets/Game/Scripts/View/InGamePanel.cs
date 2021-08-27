@@ -4,6 +4,7 @@ using Game.Scripts.Models;
 using Game.Scripts.Models.ViewParams;
 using Mek.Coroutines;
 using Mek.Extensions;
+using Mek.Localization;
 using Mek.Navigation;
 using UnityEngine;
 using UnityEngine.UI;
@@ -68,7 +69,10 @@ namespace Game.Scripts.View
 
         private void OnScoreChanged(int score)
         {
-            _scoreText.text = score.ToString();
+            if (LocalizationManager.TryGetTranslationWithParameter("SCORE", "0", score.ToString(), out var translatedText))
+            {
+                _scoreText.text = translatedText;
+            }
         }
 
         private void UpdateUndoButton()

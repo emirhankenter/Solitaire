@@ -8,6 +8,7 @@ using Game.Scripts.Enums;
 using Game.Scripts.Models;
 using Mek.Coroutines;
 using Mek.Extensions;
+using Mek.Models;
 using Mek.Utilities;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
@@ -128,7 +129,13 @@ namespace Game.Scripts.Controllers
                         card.transform.DOMove(pile.transform.position + Vector3.up * (MainPile.MainPileYOffset * j), 0.2f)
                             .SetDelay(i1)
                             .SetEase(Ease.Linear)
-                            .OnStart(() => _dealCardAudioClip.Play(0.2f));
+                            .OnStart(() =>
+                            {
+                                if (MekPlayerData.SoundFXEnabled)
+                                {
+                                    _dealCardAudioClip.Play(0.2f);
+                                }
+                            });
                         
                         card.Init(count == 0);
                         card.SetPile(pile);
@@ -210,7 +217,10 @@ namespace Game.Scripts.Controllers
 
             if (!canBePut)
             {
-                _errorAudioClip.Play();
+                if (MekPlayerData.SoundFXEnabled)
+                {
+                    _errorAudioClip.Play();
+                }
             }
 
             return canBePut;
@@ -265,7 +275,10 @@ namespace Game.Scripts.Controllers
             if (!to.CanCardsPutHere(cards))
             {
                 from.ArrangeOrders();
-                _errorAudioClip.Play();
+                if (MekPlayerData.SoundFXEnabled)
+                {
+                    _errorAudioClip.Play();
+                }
                 return false;
             }
 
@@ -278,7 +291,10 @@ namespace Game.Scripts.Controllers
 
             if (to is MainPile mainPile)
             {
-                _mainPileAudioClip.Play(0.2f);
+                if (MekPlayerData.SoundFXEnabled)
+                {
+                    _mainPileAudioClip.Play(0.2f);
+                }
             }
             
             HistoryController.Instance.SaveMovement(new MovementData(new List<Card>(cards), from, to, flippedCards, score));
