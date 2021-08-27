@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using Game.Scripts.Models;
 using Game.Scripts.Models.ViewParams;
@@ -39,13 +40,18 @@ namespace Game.Scripts.Controllers
             
             CoroutineController.DoAfterFixedUpdate(() =>
             {
-                Navigation.Panel.Change(new HomePanelParams(StartGame, StartGame)); //todo: implement new Match, continue
+                Navigation.Panel.Change(new HomePanelParams(StartGame, StartGame));
             });
             
             CoroutineController.DoAfterCondition(() => AdsController.Instance.IsInitialized, () =>
             {
                 AdsController.Instance.LoadBanner();
             });
+        }
+
+        private void OnDestroy()
+        {
+            Dispose();
         }
 
         private void StartGame()
@@ -56,7 +62,6 @@ namespace Game.Scripts.Controllers
             CurrentSession?.Init();
             _boardController.DealCards();
             
-            _playerController.CanPlay = false;
             
             Navigation.Panel.Change(new InGamePanelParams(TogglePause, UndoMovement, RestartGame, BackToHomeScreen));
             
@@ -72,7 +77,6 @@ namespace Game.Scripts.Controllers
 
         private void OnBoardReadyToPlay()
         {
-            _playerController.CanPlay = true;
             CurrentSession.StartTimer();
         }
 
@@ -89,7 +93,6 @@ namespace Game.Scripts.Controllers
         {
             IsPaused = state;
             Time.timeScale = IsPaused ? 0f : 1f;
-            _playerController.CanPlay = !state;
         }
 
         private void UndoMovement()
@@ -114,7 +117,7 @@ namespace Game.Scripts.Controllers
         private void BackToHomeScreen()
         {
             ResetGame();
-            Navigation.Panel.Change(new HomePanelParams(StartGame, StartGame)); //todo: implement new Match, continue
+            Navigation.Panel.Change(new HomePanelParams(StartGame, StartGame));
             
             AdsController.Instance.HideBannerAd();
         }

@@ -16,8 +16,7 @@ namespace Game.Scripts.Controllers
         private Vector2? _currentMousePos;
 
         private bool IsPressing => _lastMousePos.HasValue;
-        
-        public bool CanPlay { get; set; }
+        public bool CanPlay => !GameController.Instance.IsPaused && BoardController.Instance.IsReady;
 
         private Camera _cam;
 

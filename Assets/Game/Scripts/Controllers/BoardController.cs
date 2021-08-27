@@ -45,11 +45,18 @@ namespace Game.Scripts.Controllers
         private List<Sprite> _seedSprites;
         
         private List<Card> _spawnedCards = new List<Card>();
+        
+        public bool IsReady { get; private set; }
 
         protected override void OnAwake()
         {
             _numberSprites = Resources.LoadAll<Sprite>("Numbers").OrderBy(obj => int.Parse(obj.name)).ToList();
             _seedSprites = Resources.LoadAll<Sprite>("Seeds").OrderBy(obj => int.Parse(obj.name)).ToList();
+        }
+
+        private void OnDestroy()
+        {
+            Dispose();
         }
 
         public void Init()
@@ -59,7 +66,7 @@ namespace Game.Scripts.Controllers
             Pile.ScoreMade += OnScoreMade;
         }
 
-        public void Dispose()//todo: dispose!!!!
+        private void Dispose()
         {
             _closedDeckPile.Clicked -= OnDrawCardClicked;
             MovementData.MovementMade -= OnMovementMade;
@@ -69,8 +76,13 @@ namespace Game.Scripts.Controllers
         [Button]
         public void ResetBoard()
         {
+            IsReady = false;
             foreach (var card in _spawnedCards)
             {
+                if (DOTween.IsTweening(card.transform))
+                {
+                    card.transform.DOKill();
+                }
                 card.Recycle();
             }
             
@@ -126,6 +138,7 @@ namespace Game.Scripts.Controllers
                         var pile = _mainPiles[i];
                         // card.transform.position = pile.transform.position + Vector3.up * _mainPileYOffset * j;
                         count--;
+                        var isFinal = i == 6 && j == 6;
                         card.transform.DOMove(pile.transform.position + Vector3.up * (MainPile.MainPileYOffset * j), 0.2f)
                             .SetDelay(i1)
                             .SetEase(Ease.Linear)
@@ -134,6 +147,14 @@ namespace Game.Scripts.Controllers
                                 if (MekPlayerData.SoundFXEnabled)
                                 {
                                     _dealCardAudioClip.Play(0.2f);
+                                }
+                            })
+                            .OnComplete(() =>
+                            {
+                                if (isFinal)
+                                {
+                                    IsReady = true;
+                                    ReadyToPlay?.Invoke();
                                 }
                             });
                         
@@ -147,7 +168,7 @@ namespace Game.Scripts.Controllers
             }
             CoroutineController.DoAfterGivenTime(i1, () =>
             {
-                ReadyToPlay?.Invoke();
+                // ReadyToPlay?.Invoke();
             });
 
             
