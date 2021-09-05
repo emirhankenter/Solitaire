@@ -31,7 +31,7 @@ public class JenkinsBuild {
     {
         var args = FindArgs();
  
-        string fullPathAndName = args.targetDir + args.appName;
+        string fullPathAndName = args.targetDir + args.appName + ".exe";
         BuildProject(EnabledScenes, fullPathAndName, BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64, BuildOptions.None);
     }
  
@@ -46,6 +46,17 @@ public class JenkinsBuild {
         BuildProject(EnabledScenes, fullPathAndName, BuildTargetGroup.Standalone, BuildTarget.StandaloneLinux64, BuildOptions.None);
     }
  
+    // ------------------------------------------------------------------------
+    // called from Jenkins
+    // ------------------------------------------------------------------------
+    public static void BuildAndroid()
+    {
+        var args = FindArgs();
+ 
+        string fullPathAndName = args.targetDir + args.appName + ".apk";
+        BuildProject(EnabledScenes, fullPathAndName, BuildTargetGroup.Android, BuildTarget.Android, BuildOptions.None);
+    }
+    
     private static Args FindArgs()
     {
         var returnValue = new Args();
