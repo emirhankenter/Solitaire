@@ -56,15 +56,26 @@ public class JenkinsBuild {
         string fullPathAndName = args.targetDir + args.appName + ".apk";
         BuildProject(EnabledScenes, fullPathAndName, BuildTargetGroup.Android, BuildTarget.Android, BuildOptions.None);
     }
+ 
+    // ------------------------------------------------------------------------
+    // called from Jenkins
+    // ------------------------------------------------------------------------
+    public static void BuildIOS()
+    {
+        var args = FindArgs();
+ 
+        string fullPathAndName = args.targetDir + args.appName;
+        BuildProject(EnabledScenes, fullPathAndName, BuildTargetGroup.iOS, BuildTarget.iOS, BuildOptions.None);
+    }
     
     private static Args FindArgs()
     {
         var returnValue = new Args();
  
         // find: -executeMethod
-        //   +1: JenkinsBuild.BuildMacOS
-        //   +2: FindTheGnome
-        //   +3: D:\Jenkins\Builds\Find the Gnome\47\output
+        //   +1: JenkinsBuild.BuildTarget
+        //   +2: JOB_NAME
+        //   +3: D:\Jenkins\Builds\JOB_NAME\BUILD_NUMBER\output
         string[] args = System.Environment.GetCommandLineArgs();
         var execMethodArgPos = -1;
         bool allArgsFound = false;
